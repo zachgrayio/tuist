@@ -33,10 +33,16 @@ extension TuistGraph.Config {
             cache = try TuistGraph.Cache.from(manifest: manifestCache, generatorPaths: generatorPaths)
         }
 
+        var flare: TuistGraph.Flare?
+        if let manifestFlare = manifest.flare {
+            flare = try TuistGraph.Flare.from(manifest: manifestFlare)
+        }
+        
         return TuistGraph.Config(
             compatibleXcodeVersions: compatibleXcodeVersions,
             cloud: cloud,
             cache: cache,
+            flare: flare,
             swiftVersion: swiftVersion,
             plugins: plugins,
             generationOptions: generationOptions,

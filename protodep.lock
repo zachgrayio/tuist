@@ -1,0 +1,65 @@
+proto_outdir = "./managed_proto"
+
+[[dependencies]]
+  target = "github.com/protocolbuffers/protobuf/src/google/protobuf"
+  revision = "f1a939fb69504ff4e1fe386978165faa37fb2979"
+  branch = "main"
+  path = "google/protobuf"
+  protocol = ""
+
+[[dependencies]]
+  target = "github.com/googleapis/googleapis/google/bytestream"
+  revision = "01d4201e2620da2084d2151522c25cf49dda9da3"
+  branch = "master"
+  path = "google/bytestream"
+  protocol = ""
+
+[[dependencies]]
+  target = "github.com/googleapis/googleapis/google/longrunning"
+  revision = "01d4201e2620da2084d2151522c25cf49dda9da3"
+  branch = "master"
+  path = "google/longrunning"
+  protocol = ""
+
+[[dependencies]]
+  target = "github.com/googleapis/googleapis/google/rpc"
+  revision = "01d4201e2620da2084d2151522c25cf49dda9da3"
+  branch = "master"
+  path = "google/rpc"
+  protocol = ""
+
+[[dependencies]]
+  target = "github.com/googleapis/googleapis/google/api"
+  revision = "01d4201e2620da2084d2151522c25cf49dda9da3"
+  branch = "master"
+  path = "google/api"
+  protocol = ""
+
+[[dependencies]]
+  target = "github.com/googleapis/googleapis/google/devtools/build/v1"
+  revision = "01d4201e2620da2084d2151522c25cf49dda9da3"
+  branch = "master"
+  path = "google/devtools/build/v1"
+  protocol = ""
+
+[[dependencies]]
+  target = "github.com/bazelbuild/bazel/src/main/java/com/google/devtools/build/lib/buildeventstream/proto"
+  revision = "5247c6172a9dde82bf356b9140557c7dbf11a935"
+  branch = "master"
+  path = "build_event_stream"
+  protocol = ""
+
+[[dependencies]]
+  target = "github.com/bazelbuild/bazel/src/main/protobuf"
+  revision = "5247c6172a9dde82bf356b9140557c7dbf11a935"
+  branch = "master"
+  path = "src/main/protobuf"
+  ignores = ["execution_graph.proto"]
+  protocol = ""
+
+[[dependencies]]
+  target = "github.com/bazelbuild/remote-apis/build/bazel"
+  revision = "aa29b91f336b9be2c5370297210b67a6654c0b72"
+  branch = "main"
+  path = "build/bazel"
+  protocol = ""

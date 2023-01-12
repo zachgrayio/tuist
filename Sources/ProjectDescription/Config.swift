@@ -41,6 +41,9 @@ public struct Config: Codable, Equatable {
     /// Cache configuration.
     public let cache: Cache?
 
+    /// Flare configuration.
+    public let flare: Flare?
+
     /// The Swift tools versions that will be used by Tuist to fetch external dependencies.
     /// If `nil` is passed then Tuist will use the environment’s version.
     /// - Note: This **does not** control the `SWIFT_VERSION` build setting in regular generated projects, for this please use `Project.settings`
@@ -59,6 +62,7 @@ public struct Config: Codable, Equatable {
     public init(
         compatibleXcodeVersions: CompatibleXcodeVersions = .all,
         cloud: Cloud? = nil,
+        flare: Flare? = nil,
         cache: Cache? = nil,
         swiftVersion: Version? = nil,
         plugins: [PluginLocation] = [],
@@ -68,6 +72,7 @@ public struct Config: Codable, Equatable {
         self.plugins = plugins
         self.generationOptions = generationOptions
         self.cloud = cloud
+        self.flare = flare
         self.cache = cache
         self.swiftVersion = swiftVersion
         dumpIfNeeded(self)

@@ -105,3 +105,8 @@ Tuist/Dependencies/graph.json
 # Release artifacts
 vendor/
 .bundle
+
+# protodep up should be used to fetch these as needed
+/managed_proto
+
+Sources/BazelProto/src/main/protobuf/remote_execution_log.pb.swift
