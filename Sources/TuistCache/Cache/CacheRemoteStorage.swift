@@ -119,19 +119,6 @@ public final class CacheRemoteStorage: CacheStoring {
         }
     }
 
-    // MARK: - Private
-
-    private func artifactPath(in archive: AbsolutePath) -> AbsolutePath? {
-        if let xcframeworkPath = FileHandler.shared.glob(archive, glob: "*.xcframework").first {
-            return xcframeworkPath
-        } else if let frameworkPath = FileHandler.shared.glob(archive, glob: "*.framework").first {
-            return frameworkPath
-        } else if let bundlePath = FileHandler.shared.glob(archive, glob: "*.bundle").first {
-            return bundlePath
-        }
-        return nil
-    }
-
     private func unzip(downloadedArchive: AbsolutePath, hash: String) throws -> AbsolutePath {
         let zipPath = try FileHandler.shared.changeExtension(path: downloadedArchive, to: "zip")
         let archiveDestination = cacheDirectoriesProvider.cacheDirectory(for: .builds).appending(component: hash)
@@ -149,4 +136,15 @@ public final class CacheRemoteStorage: CacheStoring {
         try FileHandler.shared.move(from: unarchivedDirectory, to: archiveDestination)
         return artifactPath(in: archiveDestination)!
     }
+}
+
+public func artifactPath(in archive: AbsolutePath) -> AbsolutePath? {
+    if let xcframeworkPath = FileHandler.shared.glob(archive, glob: "*.xcframework").first {
+        return xcframeworkPath
+    } else if let frameworkPath = FileHandler.shared.glob(archive, glob: "*.framework").first {
+        return frameworkPath
+    } else if let bundlePath = FileHandler.shared.glob(archive, glob: "*.bundle").first {
+        return bundlePath
+    }
+    return nil
 }

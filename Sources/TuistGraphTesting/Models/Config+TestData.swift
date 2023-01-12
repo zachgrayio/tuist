@@ -17,6 +17,7 @@ extension Config {
             compatibleXcodeVersions: compatibleXcodeVersions,
             cloud: cloud,
             cache: cache,
+            flare: nil,
             swiftVersion: swiftVersion,
             plugins: plugins,
             generationOptions: generationOptions,

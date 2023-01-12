@@ -223,6 +223,8 @@ func targets() -> [Target] {
                     .target(name: "TuistGraph"),
                     .target(name: "TuistSupport"),
                     .target(name: "TuistCloud"),
+                    .target(name: "BazelProto"),
+                    .sdk(name: "c++", type: .library, status: .required),
                 ],
                 testDependencies: [
                     .target(name: "TuistCore"),
@@ -232,6 +234,7 @@ func targets() -> [Target] {
                     .target(name: "TuistSupportTesting"),
                     .target(name: "TuistCoreTesting"),
                     .target(name: "TuistGraphTesting"),
+                    .target(name: "BazelProto"),
                 ],
                 testingDependencies: [
                     .target(name: "TuistCore"),
@@ -241,6 +244,7 @@ func targets() -> [Target] {
                     .target(name: "TuistCoreTesting"),
                     .target(name: "TuistGraphTesting"),
                     .target(name: "TuistSupportTesting"),
+                    .target(name: "BazelProto"),
                 ],
                 integrationTestsDependencies: [
                     .target(name: "TuistCore"),
@@ -250,6 +254,16 @@ func targets() -> [Target] {
                     .target(name: "TuistSupportTesting"),
                     .target(name: "TuistCoreTesting"),
                     .target(name: "TuistGraphTesting"),
+                    .target(name: "BazelProto"),
+                ]
+            ),
+            Target.module(
+                name: "BazelProto",
+                hasTests: false,
+                hasTesting: false,
+                hasIntegrationTests: false,
+                dependencies: [
+                    .external(name: "GRPC"),
                 ]
             ),
             Target.module(

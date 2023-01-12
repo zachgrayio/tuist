@@ -61,6 +61,7 @@ let package = Package(
         .package(url: "https://github.com/SwiftGen/StencilSwiftKit.git", exact: "2.9.0"),
         .package(url: "https://github.com/FabrizioBrancati/Queuer.git", from: "2.1.1"),
         .package(url: "https://github.com/CombineCommunity/CombineExt.git", from: "1.8.0"),
+        .package(url: "https://github.com/grpc/grpc-swift.git", from: "1.10.0"),
     ],
     targets: [
         .target(
@@ -295,6 +296,13 @@ let package = Package(
                 "TuistCore",
                 "TuistGraph",
                 "TuistSupport",
+                "BazelProto",
+            ]
+        ),
+        .target(
+            name: "BazelProto",
+            dependencies: [
+                .product(name: "GRPC", package: "grpc-swift"),
             ]
         ),
         .testTarget(
