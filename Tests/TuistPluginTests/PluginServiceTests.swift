@@ -419,6 +419,7 @@ final class PluginServiceTests: TuistUnitTestCase {
             compatibleXcodeVersions: .all,
             cloud: nil,
             cache: nil,
+            flare: nil,
             swiftVersion: nil,
             plugins: plugins,
             generationOptions: .test(),
