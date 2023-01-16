@@ -37,7 +37,7 @@ extension TuistGraph.Config {
         if let manifestFlare = manifest.flare {
             flare = try TuistGraph.Flare.from(manifest: manifestFlare)
         }
-        
+
         return TuistGraph.Config(
             compatibleXcodeVersions: compatibleXcodeVersions,
             cloud: cloud,
