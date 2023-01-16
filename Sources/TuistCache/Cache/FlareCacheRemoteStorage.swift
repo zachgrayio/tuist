@@ -1,15 +1,15 @@
+import BazelProto
 import Foundation
+import GRPC
+import NIO
+import NIOCore
+import NIOHPACK
+import NIOPosix
+import SwiftProtobuf
 import TSCBasic
 import TuistCore
 import TuistGraph
 import TuistSupport
-import BazelProto
-import GRPC
-import SwiftProtobuf
-import NIOHPACK
-import NIO
-import NIOCore
-import NIOPosix
 
 typealias KVStorageClient = KvStorage_KVStorageAsyncClient
 typealias CapabilitiesClient = Build_Bazel_Remote_Execution_V2_CapabilitiesAsyncClient
@@ -71,9 +71,9 @@ public final class FlareCacheRemoteStorage: CacheStoring {
         self.flareConfig = flareConfig
         self.fileArchiverFactory = fileArchiverFactory
         self.cacheDirectoriesProvider = cacheDirectoriesProvider
-        self.initClients()
+        initClients()
     }
-    
+
     deinit {
         DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
             try? self.group.syncShutdownGracefully()
@@ -113,7 +113,7 @@ public final class FlareCacheRemoteStorage: CacheStoring {
         }
     }
 
-    public func store(name: String, hash: String, paths: [AbsolutePath]) async throws {
+    public func store(name _: String, hash: String, paths: [AbsolutePath]) async throws {
         let resourceName = getResourceName(hash: hash, upload: true)
         let archiver = try fileArchiverFactory.makeFileArchiver(for: paths)
         do {
@@ -127,22 +127,22 @@ public final class FlareCacheRemoteStorage: CacheStoring {
     }
 
     // MARK: - Private
-    
-    private func getResourceName(hash: String, upload: Bool = false) -> String {
-        return "\(self.instanceName)/\(hash)"
+
+    private func getResourceName(hash: String, upload _: Bool = false) -> String {
+        "\(instanceName)/\(hash)"
     }
-    
+
     /// readBlob - Reads the specified blob by resource name off of the gRPC Bytestream and writes the results to a file at the specified path
     private func readBlob(resourceName: String, filePath: AbsolutePath) async throws {
         guard let client = kvClient else {
             logger.warning("readBlob: connection failed")
             throw FlareCacheRemoteStorageError.connectionFailed
         }
-        
+
         let readReq: Google_Bytestream_ReadRequest = make {
             $0.resourceName = resourceName
         }
-        
+
         let resStream = client.get(readReq)
         var blobData = Data()
         for try await blobChunk: Google_Bytestream_ReadResponse in resStream {
@@ -159,16 +159,19 @@ public final class FlareCacheRemoteStorage: CacheStoring {
             logger.warning("writeBlob: connection failed")
             throw FlareCacheRemoteStorageError.connectionFailed
         }
-        
+
         let (size, fileHash, reqs) = try writeRequests(resourceName: resourceName, file: file)
         let res = try await client.put(reqs)
         assert(Int64(size) == res.committedSize, "backend failed to commit all sent data")
         logger.trace("grpc put \(resourceName), hash: \(fileHash) - committed size: \(res.committedSize), expected size: \(size)")
     }
-    
-    // todo: return an async iterable rather than copying the whole file around, though its already read in whole
+
+    // TODO: return an async iterable rather than copying the whole file around, though its already read in whole
     // from disk so not sure the impact this will have
-    private func writeRequests(resourceName: String, file: AbsolutePath) throws -> (Int, String, [Google_Bytestream_WriteRequest]) {
+    private func writeRequests(
+        resourceName: String,
+        file: AbsolutePath
+    ) throws -> (Int, String, [Google_Bytestream_WriteRequest]) { // swiftlint:disable:this large_tuple
         let fileData = [UInt8](try FileHandler.shared.readFile(file))
         // expensive; hash is costly and also a redundant COPY, remove when debugging server responses isn't needed
         let fileHash = SHA256().hashStr(Data(fileData))
@@ -182,7 +185,7 @@ public final class FlareCacheRemoteStorage: CacheStoring {
         reqs[reqs.count - 1].finishWrite = true
         return (fileData.count, fileHash, reqs)
     }
-    
+
     private func initClients() {
         if let target = URLComponents(string: flareConfig.url) {
             let secure: Bool = target.scheme != nil && target.scheme!.contains("grpcs")
@@ -193,34 +196,32 @@ public final class FlareCacheRemoteStorage: CacheStoring {
                     $0.toolName = "tuist"
                 }
             }
-            let mdString = try! reqMd.serializedData().base64EncodedString()
+            let mdString = try! reqMd.serializedData().base64EncodedString() // swiftlint:disable:this force_try
             let hdrs = [
                 ("x-flare-buildtool", "tuist"),
                 ("authorization", "Bearer \(flareConfig.authToken)"),
-                ("build.bazel.remote.execution.v2.requestmetadata-bin", mdString)
+                ("build.bazel.remote.execution.v2.requestmetadata-bin", mdString),
                 // additional headers here
             ]
             let co = CallOptions(customMetadata: HPACKHeaders(hdrs), timeLimit: .timeout(TimeAmount.seconds(30)))
             do {
-                self.channel = try GRPCChannelPool.with(
+                channel = try GRPCChannelPool.with(
                     target: .host(target.host!, port: target.port!),
                     transportSecurity: secure ? .tls(tls) : .plaintext,
                     eventLoopGroup: group
                 )
-            }
-            catch {
+            } catch {
                 logger.error("failed to initialze gRPC connection: \(error)")
                 return
             }
-            if let chan = self.channel {
+            if let chan = channel {
                 capClient = CapabilitiesClient(channel: chan, defaultCallOptions: co)
                 casClient = CASClient(channel: chan, defaultCallOptions: co)
                 kvClient = KVStorageClient(channel: chan, defaultCallOptions: co)
                 runBlocking {
                     do {
                         try await self.checkCapabilities()
-                    }
-                    catch {
+                    } catch {
                         logger.error("failed to initialze gRPC connection and query cache capabilties: \(error)")
                         throw error
                     }
@@ -228,10 +229,9 @@ public final class FlareCacheRemoteStorage: CacheStoring {
             } else {
                 logger.error("gRPC channel or call opts is nil")
             }
-            
         }
     }
-    
+
     private func checkCapabilities() async throws {
         guard let client = capClient else {
             logger.warning("checkCapabilites: connection failed")
@@ -242,14 +242,15 @@ public final class FlareCacheRemoteStorage: CacheStoring {
         })
         let valid = (
             caps.hasCacheCapabilities &&
-            caps.cacheCapabilities.hasActionCacheUpdateCapabilities &&
-            caps.cacheCapabilities.actionCacheUpdateCapabilities.updateEnabled)
-        self.validCapabilities = valid
+                caps.cacheCapabilities.hasActionCacheUpdateCapabilities &&
+                caps.cacheCapabilities.actionCacheUpdateCapabilities.updateEnabled
+        )
+        validCapabilities = valid
         if !valid {
             logger.warning("invalid remote cache capabilities")
         }
     }
-    
+
     public func unzip(zipPath: AbsolutePath, hash: String) throws -> AbsolutePath {
         logger.trace("\(hash): zipPath: \(zipPath)")
         let fileUnarchiver = try fileArchiverFactory.makeFileUnarchiver(for: zipPath)
@@ -277,11 +278,11 @@ public final class FlareCacheRemoteStorage: CacheStoring {
  - Parameter f: initializer function
  - Returns: the proto message with your changes applied
  */
-func make<T: Message> (f: (inout T) -> Void) -> T { var t = T.init(); f(&t); return t }
+func make<T: Message>(f: (inout T) -> Void) -> T { var t = T(); f(&t); return t }
 
 extension Array {
     func chunked(into size: Int) -> [[Element]] {
-        return stride(from: 0, to: count, by: size).map {
+        stride(from: 0, to: count, by: size).map {
             Array(self[$0 ..< Swift.min($0 + size, count)])
         }
     }
@@ -289,7 +290,7 @@ extension Array {
 
 extension SHA256 {
     func hashStr(_ data: Data) -> String {
-        return SHA256()
+        SHA256()
             .hash(ByteString(data))
             .contents
             .compactMap { String(format: "%02x", $0) }

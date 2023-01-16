@@ -11,7 +11,7 @@ public protocol CacheStoring {
     func exists(name: String, hash: String) async throws -> Bool
 
     /// For the target with the given hash, it fetches it from the cache and returns a path
-    /// pointint to the .xcframework that represents it.
+    /// pointing to the .xcframework that represents it.
     ///
     /// - Parameters:
     ///   - name: Target's name.

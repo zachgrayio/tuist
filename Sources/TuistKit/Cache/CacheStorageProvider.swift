@@ -86,8 +86,8 @@ final class CacheStorageProvider: CacheStorageProviding {
         if !cloudCacheConfigured {
             logger.warning("setup flare -- no cloud")
             if let flareConfig = config.flare {
-                // todo: get the auth token in a sane way, maybe like the above cloud auth controller stuff.
-                // todo: also consider optional pattern to just print warnings if token isn't present.
+                // TODO: get the auth token in a sane way, maybe like the above cloud auth controller stuff.
+                // TODO: also consider optional pattern to just print warnings if token isn't present.
                 let flareRemoteStorage = FlareCacheRemoteStorage(
                     flareConfig: flareConfig,
                     cacheDirectoriesProvider: cacheDirectoriesProvider
