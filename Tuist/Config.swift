@@ -8,10 +8,10 @@ let config = Config(
     //     url: "https://cloud.tuist.io",
     //     options: [.optional, .analytics]
     // ),
-    flare: .flare(
-        url: cacheUrl(),
-        authToken: authToken()
-    ),
+//    flare: .flare(
+//        url: cacheUrl(),
+//        authToken: authToken()
+//    ),
     swiftVersion: .init("5.4.0")
 )
 
