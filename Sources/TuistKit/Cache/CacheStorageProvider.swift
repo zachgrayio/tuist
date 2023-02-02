@@ -28,6 +28,7 @@ final class CacheStorageProvider: CacheStorageProviding {
     private let config: Config
     private let cacheDirectoryProviderFactory: CacheDirectoriesProviderFactoring
     private let cloudAuthenticationController: CloudAuthenticationControlling
+    private let flareAuthenticationController: FlareAuthenticationControlling
 
     /// Cached response for list of storages
     @Atomic
@@ -39,22 +40,24 @@ final class CacheStorageProvider: CacheStorageProviding {
         self.init(
             config: config,
             cacheDirectoryProviderFactory: CacheDirectoriesProviderFactory(),
-            cloudAuthenticationController: CloudAuthenticationController()
+            cloudAuthenticationController: CloudAuthenticationController(),
+            flareAuthenticationController: FlareAuthenticationController()
         )
     }
 
     init(
         config: Config,
         cacheDirectoryProviderFactory: CacheDirectoriesProviderFactoring,
-        cloudAuthenticationController: CloudAuthenticationControlling
+        cloudAuthenticationController: CloudAuthenticationControlling,
+        flareAuthenticationController: FlareAuthenticationControlling
     ) {
         self.config = config
         self.cacheDirectoryProviderFactory = cacheDirectoryProviderFactory
         self.cloudAuthenticationController = cloudAuthenticationController
+        self.flareAuthenticationController = flareAuthenticationController
     }
 
     func storages() throws -> [CacheStoring] {
-        logger.warning("storages()")
         if let storages = Self.storages {
             logger.warning("setup flare - init'd already")
             return storages
@@ -84,18 +87,18 @@ final class CacheStorageProvider: CacheStorageProviding {
             }
         }
         if !cloudCacheConfigured {
-            logger.warning("setup flare -- no cloud")
-            if let flareConfig = config.flare {
-                // TODO: get the auth token in a sane way, maybe like the above cloud auth controller stuff.
-                // TODO: also consider optional pattern to just print warnings if token isn't present.
+            if let effectiveConfig = flareAuthenticationController.effectiveFlareConfig(config.flare) {
+                logger.info("🤖 Bitrise remote cache enabled!", metadata: .success)
+                logger.debug("Bitrise cache URL: \(effectiveConfig.url)")
+                logger.debug("Bitrise cache token: \(effectiveConfig.authToken)")
+
                 let flareRemoteStorage = FlareCacheRemoteStorage(
-                    flareConfig: flareConfig,
+                    flareConfig: effectiveConfig,
                     cacheDirectoriesProvider: cacheDirectoriesProvider
                 )
                 let storage = RetryingCacheStorage(cacheStoring: flareRemoteStorage)
                 storages.append(storage)
                 cloudCacheConfigured = true
-                logger.warning("setup flare -- done!")
             }
         }
         Self.storages = storages

@@ -8,25 +8,14 @@ let config = Config(
     //     url: "https://cloud.tuist.io",
     //     options: [.optional, .analytics]
     // ),
-//    flare: .flare(
-//        url: cacheUrl(),
-//        authToken: authToken()
-//    ),
+
+    // Enable remote cache here or via the following env vars:
+    // - REMOTE_CACHE_ENDPOINT
+    // - REMOTE_CACHE_TOKEN
+
+    //  flare: .flare(
+    //      url: cacheUrl(),
+    //      authToken: authToken()
+    //  ),
     swiftVersion: .init("5.4.0")
 )
-
-func cacheUrl() -> String {
-    if case let .string(bitriseCacheUrl) = Environment.bitriseCacheUrl {
-        return bitriseCacheUrl
-    } else {
-        return "gprc://localhost:6666"
-    }
-}
-
-func authToken() -> String {
-    if case let .string(bitriseCacheToken) = Environment.bitriseCacheToken {
-        return bitriseCacheToken
-    } else {
-        return "local_bitrise"
-    }
-}

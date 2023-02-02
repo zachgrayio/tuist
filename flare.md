@@ -26,9 +26,3 @@ Furthermore, the gRPC building blocks are present here to also send whatever rel
 - Run `./gen_proto.sh`
 - to add deps, edit `protodep.toml`
 
-## Building this fork
-
-This fork has some issues involving Tuist's support for grpc-swift and it's reliance on NIOSSL. 
-
-Before project generation or dependency fetching, be sure to set `GRPC_NO_NIO_SSL=1` or better yet, `export GRPC_NO_NIO_SSL=1`. From here, `./fourier generate tuist` and `swift run tuist fetch` etc should correctly download gRPC without the NIO dependency which results in missing symbols errors on arm64 (root cause unknown).
-

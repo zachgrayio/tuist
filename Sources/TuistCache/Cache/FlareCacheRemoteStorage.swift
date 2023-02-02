@@ -206,7 +206,7 @@ public final class FlareCacheRemoteStorage: CacheStoring {
             let co = CallOptions(customMetadata: HPACKHeaders(hdrs), timeLimit: .timeout(TimeAmount.seconds(30)))
             do {
                 channel = try GRPCChannelPool.with(
-                    target: .host(target.host!, port: target.port!),
+                    target: .host(target.host!, port: target.port ?? (secure ? 443 : 80)),
                     transportSecurity: secure ? .tls(tls) : .plaintext,
                     eventLoopGroup: group
                 )
