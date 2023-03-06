@@ -49,6 +49,8 @@ public final class FlareCacheRemoteStorage: CacheStoring {
     private var validCapabilities: Bool?
     private let instanceName = "tuist"
     private let sessionId = UUID().uuidString
+    private let defaultTimeout = TimeAmount.seconds(30)
+    private let uploadTimeout = TimeAmount.minutes(5)
 
     // MARK: - Init
 
@@ -161,7 +163,7 @@ public final class FlareCacheRemoteStorage: CacheStoring {
         }
 
         let (size, fileHash, reqs) = try writeRequests(resourceName: resourceName, file: file)
-        let res = try await client.put(reqs)
+        let res = try await client.put(reqs, callOptions: callOptions(withTimeout: uploadTimeout))
         assert(Int64(size) == res.committedSize, "backend failed to commit all sent data")
         logger.trace("grpc put \(resourceName), hash: \(fileHash) - committed size: \(res.committedSize), expected size: \(size)")
     }
@@ -190,20 +192,8 @@ public final class FlareCacheRemoteStorage: CacheStoring {
         if let target = URLComponents(string: flareConfig.url) {
             let secure: Bool = target.scheme != nil && target.scheme!.contains("grpcs")
             let tls = GRPCTLSConfiguration.makeClientConfigurationBackedByNIOSSL()
-            let reqMd: ReqMetadata = make {
-                $0.toolInvocationID = sessionId
-                $0.toolDetails = make {
-                    $0.toolName = "tuist"
-                }
-            }
-            let mdString = try! reqMd.serializedData().base64EncodedString() // swiftlint:disable:this force_try
-            let hdrs = [
-                ("x-flare-buildtool", "tuist"),
-                ("authorization", "Bearer \(flareConfig.authToken)"),
-                ("build.bazel.remote.execution.v2.requestmetadata-bin", mdString),
-                // additional headers here
-            ]
-            let co = CallOptions(customMetadata: HPACKHeaders(hdrs), timeLimit: .timeout(TimeAmount.seconds(30)))
+            let co = callOptions(withTimeout: defaultTimeout)
+
             do {
                 channel = try GRPCChannelPool.with(
                     target: .host(target.host!, port: target.port ?? (secure ? 443 : 80)),
@@ -230,6 +220,23 @@ public final class FlareCacheRemoteStorage: CacheStoring {
                 logger.error("gRPC channel or call opts is nil")
             }
         }
+    }
+
+    private func callOptions(withTimeout timeout: TimeAmount) -> CallOptions {
+        let reqMd: ReqMetadata = make {
+            $0.toolInvocationID = sessionId
+            $0.toolDetails = make {
+                $0.toolName = "tuist"
+            }
+        }
+        let mdString = try! reqMd.serializedData().base64EncodedString() // swiftlint:disable:this force_try
+        let hdrs = [
+            ("x-flare-buildtool", "tuist"),
+            ("authorization", "Bearer \(flareConfig.authToken)"),
+            ("build.bazel.remote.execution.v2.requestmetadata-bin", mdString),
+            // additional headers here
+        ]
+        return CallOptions(customMetadata: HPACKHeaders(hdrs), timeLimit: .timeout(timeout))
     }
 
     private func checkCapabilities() async throws {
