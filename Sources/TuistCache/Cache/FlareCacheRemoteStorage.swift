@@ -98,7 +98,7 @@ public final class FlareCacheRemoteStorage: CacheStoring {
         if try await !client.findMissingBlobs(req).missingBlobDigests.isEmpty {
             return false
         }
-        CacheAnalytics.remoteCacheTargetsHits.insert(name)
+        CacheAnalytics.addRemoteCacheTargetHit(name)
         return true
     }
 

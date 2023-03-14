@@ -41,7 +41,11 @@ final class InfoPlistContentProvider: InfoPlistContentProviding {
 
         // iOS app
         if target.product == .app, target.platform == .iOS {
-            extend(&content, with: iosApp())
+            if case let .iOS(_, devices, _) = target.deploymentTarget, !devices.contains(.ipad) {
+                extend(&content, with: iosApp(iPadSupport: false))
+            } else {
+                extend(&content, with: iosApp(iPadSupport: true))
+            }
         }
 
         // macOS app
@@ -111,7 +115,7 @@ final class InfoPlistContentProvider: InfoPlistContentProviding {
             packageType = "FMWK"
         case .watch2App, .watch2Extension, .tvTopShelfExtension:
             packageType = "$(PRODUCT_BUNDLE_PACKAGE_TYPE)"
-        case .appExtension, .stickerPackExtension, .messagesExtension:
+        case .appExtension, .stickerPackExtension, .messagesExtension, .xpc:
             packageType = "XPC!"
         case .commandLineTool:
             packageType = nil
@@ -145,9 +149,10 @@ final class InfoPlistContentProvider: InfoPlistContentProviding {
 
     /// Returns the default Info.plist content that iOS apps should have.
     ///
+    /// - Parameter iPadSupport: Wether the `iOS` application supports `iPadOS`.
     /// - Returns: Info.plist content.
-    func iosApp() -> [String: Any] {
-        [
+    func iosApp(iPadSupport: Bool) -> [String: Any] {
+        var baseInfo: [String: Any] = [
             "LSRequiresIPhoneOS": true,
             "UIRequiredDeviceCapabilities": [
                 "armv7",
@@ -157,13 +162,22 @@ final class InfoPlistContentProvider: InfoPlistContentProviding {
                 "UIInterfaceOrientationLandscapeLeft",
                 "UIInterfaceOrientationLandscapeRight",
             ],
-            "UISupportedInterfaceOrientations~ipad": [
+            "UIApplicationSceneManifest": [
+                "UIApplicationSupportsMultipleScenes": false,
+                "UISceneConfigurations": [:],
+            ],
+        ]
+
+        if iPadSupport {
+            baseInfo["UISupportedInterfaceOrientations~ipad"] = [
                 "UIInterfaceOrientationPortrait",
                 "UIInterfaceOrientationPortraitUpsideDown",
                 "UIInterfaceOrientationLandscapeLeft",
                 "UIInterfaceOrientationLandscapeRight",
-            ],
-        ]
+            ]
+        }
+
+        return baseInfo
     }
 
     /// Returns the default Info.plist content that macOS apps should have.
@@ -189,6 +203,7 @@ final class InfoPlistContentProvider: InfoPlistContentProviding {
 
     /// Returns the default Info.plist content for a watchOS App
     ///
+    /// - Parameter name: Bundle display name
     /// - Parameter hostAppBundleId: The host application's bundle identifier
     private func watchosApp(name: String, hostAppBundleId: String?) -> [String: Any] {
         var infoPlist: [String: Any] = [
@@ -207,6 +222,7 @@ final class InfoPlistContentProvider: InfoPlistContentProviding {
 
     /// Returns the default Info.plist content for a watchOS App Extension
     ///
+    /// - Parameter name: Bundle display name
     /// - Parameter hostAppBundleId: The host application's bundle identifier
     private func watchosAppExtension(name: String, hostAppBundleId: String?) -> [String: Any] {
         let extensionAttributes: [String: Any] = hostAppBundleId.map { ["WKAppBundleIdentifier": $0] } ?? [:]

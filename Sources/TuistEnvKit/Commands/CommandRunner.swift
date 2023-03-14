@@ -97,12 +97,12 @@ class CommandRunner: CommandRunning {
             version = highgestVersion
         }
 
-        let path = versionsController.path(version: version)
+        let path = try versionsController.path(version: version)
         try runAtPath(path)
     }
 
     func runVersion(_ version: String) throws {
-        guard Version(string: version) != nil else {
+        guard Version(version) != nil else {
             logger.error("\(version) is not a valid version")
             exiter(1)
             return
@@ -113,7 +113,7 @@ class CommandRunner: CommandRunning {
             try installer.install(version: version)
         }
 
-        let path = versionsController.path(version: version)
+        let path = try versionsController.path(version: version)
         try runAtPath(path)
     }
 
