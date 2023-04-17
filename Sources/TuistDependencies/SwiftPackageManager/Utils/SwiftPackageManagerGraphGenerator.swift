@@ -44,7 +44,7 @@ public protocol SwiftPackageManagerGraphGenerating {
     /// - Parameter baseSettings: base `Settings` for targets.
     /// - Parameter targetSettings: `SettingsDictionary` overrides for targets.
     /// - Parameter swiftToolsVersion: The version of Swift tools that will be used to generate dependencies.
-    /// - Parameter configurations: The custom configurations for generated projects.
+    /// - Parameter projectOptions: The custom configurations for generated projects.
     func generate(
         at path: AbsolutePath,
         productTypes: [String: TuistGraph.Product],
@@ -97,16 +97,16 @@ public final class SwiftPackageManagerGraphGenerator: SwiftPackageManagerGraphGe
                 guard let path = dependency.packageRef.path ?? dependency.packageRef.location else {
                     throw SwiftPackageManagerGraphGeneratorError.missingPathInLocalSwiftPackage(name)
                 }
-                packageFolder = AbsolutePath(path)
+                packageFolder = try AbsolutePath(validating: path)
             default:
                 throw SwiftPackageManagerGraphGeneratorError.unsupportedDependencyKind(dependency.packageRef.kind)
             }
 
             let packageInfo = try swiftPackageManagerController.loadPackageInfo(at: packageFolder)
-            let targetToArtifactPaths = workspaceState.object.artifacts
+            let targetToArtifactPaths = try workspaceState.object.artifacts
                 .filter { $0.packageRef.identity == dependency.packageRef.identity }
                 .reduce(into: [:]) { result, artifact in
-                    result[artifact.targetName] = AbsolutePath(artifact.path)
+                    result[artifact.targetName] = try AbsolutePath(validating: artifact.path)
                 }
 
             return (
@@ -165,7 +165,7 @@ public final class SwiftPackageManagerGraphGenerator: SwiftPackageManagerGraphGe
 extension ProjectDescription.Platform {
     /// Maps a TuistGraph.Platform instance into a  ProjectDescription.Platform instance.
     /// - Parameters:
-    ///   - manifest: Graph representation of platform model.
+    ///   - graph: Graph representation of platform model.
     static func from(graph: TuistGraph.Platform) -> ProjectDescription.Platform {
         switch graph {
         case .macOS:

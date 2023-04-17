@@ -13,7 +13,7 @@ protocol SchemeDescriptorsGenerating {
     /// - Parameters:
     ///   - workspace: Workspace model.
     ///   - xcworkspacePath: Path to the workspace.
-    ///   - generatedProject: Generated Xcode project.
+    ///   - generatedProjects: Generated Xcode projects.
     ///   - graphTraverser: Graph traverser.
     /// - Throws: A FatalError if the generation of the schemes fails.
     func generateWorkspaceSchemes(
@@ -334,7 +334,7 @@ final class SchemeDescriptorsGenerator: SchemeDescriptorsGenerating {
         var environments: [XCScheme.EnvironmentVariable]?
 
         if let arguments = testAction.arguments {
-            args = XCScheme.CommandLineArguments(arguments: commandlineArgruments(arguments.launchArguments))
+            args = XCScheme.CommandLineArguments(arguments: getCommandlineArguments(arguments.launchArguments))
             environments = environmentVariables(arguments.environment)
         }
 
@@ -446,7 +446,7 @@ final class SchemeDescriptorsGenerator: SchemeDescriptorsGenerating {
         var locationScenarioReference: XCScheme.LocationScenarioReference?
 
         if let arguments = scheme.runAction?.arguments {
-            commandlineArguments = XCScheme.CommandLineArguments(arguments: commandlineArgruments(arguments.launchArguments))
+            commandlineArguments = XCScheme.CommandLineArguments(arguments: getCommandlineArguments(arguments.launchArguments))
             environments = environmentVariables(arguments.environment)
         }
 
@@ -475,6 +475,15 @@ final class SchemeDescriptorsGenerator: SchemeDescriptorsGenerating {
         }
 
         let graphTarget = graphTraverser.target(path: target.projectPath, name: target.name)
+
+        let customLLDBInitFilePath: RelativePath?
+        if let customLLDBInitFile = scheme.runAction?.customLLDBInitFile,
+           let graphTarget = graphTarget
+        {
+            customLLDBInitFilePath = customLLDBInitFile.relative(to: graphTarget.project.path)
+        } else {
+            customLLDBInitFilePath = nil
+        }
 
         if let storeKitFilePath = scheme.runAction?.options.storeKitConfigurationPath,
            let graphTarget = graphTarget
@@ -549,8 +558,10 @@ final class SchemeDescriptorsGenerator: SchemeDescriptorsGenerating {
             commandlineArguments: commandlineArguments,
             environmentVariables: environments,
             language: scheme.runAction?.options.language,
+            region: scheme.runAction?.options.region,
             launchAutomaticallySubstyle: launchActionConstants.launchAutomaticallySubstyle,
-            storeKitConfigurationFileReference: storeKitConfigurationFileReference
+            storeKitConfigurationFileReference: storeKitConfigurationFileReference,
+            customLLDBInitFile: customLLDBInitFilePath.map { "$(SRCROOT)/\($0.pathString)" }
         )
     }
 
@@ -575,7 +586,8 @@ final class SchemeDescriptorsGenerator: SchemeDescriptorsGenerating {
         if let action = scheme.profileAction, let executable = action.executable {
             target = executable
             if let arguments = action.arguments {
-                commandlineArguments = XCScheme.CommandLineArguments(arguments: commandlineArgruments(arguments.launchArguments))
+                commandlineArguments = XCScheme
+                    .CommandLineArguments(arguments: getCommandlineArguments(arguments.launchArguments))
                 environments = environmentVariables(arguments.environment)
             }
         } else if let action = scheme.runAction, let executable = action.executable {
@@ -752,7 +764,7 @@ final class SchemeDescriptorsGenerator: SchemeDescriptorsGenerating {
     ///
     /// - Parameters:
     ///     - graphTarget: The graph target.
-    ///     - graph: Tuist graph.
+    ///     - graphTraverser: Tuist graph traverser.
     ///     - rootPath: Path to the project or workspace.
     ///     - generatedProjects: Project paths mapped to generated projects.
     private func createBuildableReference(
@@ -783,8 +795,8 @@ final class SchemeDescriptorsGenerator: SchemeDescriptorsGenerating {
     /// coverage report should be generated for them.
     ///
     /// - Parameters:
-    ///   - target: test actions.
-    ///   - graph: tuist graph.
+    ///   - graphTarget: The graph target.
+    ///   - graphTraverser: Tuist graph traverser.
     ///   - generatedProjects: Generated Xcode projects.
     ///   - rootPath: Root path to workspace or project.
     /// - Returns: Array of buildable references.
@@ -830,9 +842,9 @@ final class SchemeDescriptorsGenerator: SchemeDescriptorsGenerating {
     /// Returns the scheme commandline argument passed on launch
     ///
     /// - Parameters:
-    ///     - environments: commandline argument keys.
+    ///     - arguments: commandline argument keys.
     /// - Returns: XCScheme.CommandLineArguments.CommandLineArgument.
-    private func commandlineArgruments(_ arguments: [LaunchArgument]) -> [XCScheme.CommandLineArguments.CommandLineArgument] {
+    private func getCommandlineArguments(_ arguments: [LaunchArgument]) -> [XCScheme.CommandLineArguments.CommandLineArgument] {
         arguments.map {
             XCScheme.CommandLineArguments.CommandLineArgument(name: $0.name, enabled: $0.isEnabled)
         }

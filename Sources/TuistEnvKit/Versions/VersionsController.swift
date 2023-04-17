@@ -8,7 +8,7 @@ protocol VersionsControlling: AnyObject {
 
     func install(version: String, installation: Installation) throws
     func uninstall(version: String) throws
-    func path(version: String) -> AbsolutePath
+    func path(version: String) throws -> AbsolutePath
     func versions() -> [InstalledVersion]
     func semverVersions() -> [Version]
 }
@@ -57,7 +57,7 @@ class VersionsController: VersionsControlling {
     func versions() -> [InstalledVersion] {
         Environment.shared.versionsDirectory.glob("*").map { path in
             let versionStringValue = path.components.last!
-            if let version = Version(string: versionStringValue) {
+            if let version = Version(versionStringValue) {
                 return InstalledVersion.semver(version)
             } else {
                 return InstalledVersion.reference(versionStringValue)

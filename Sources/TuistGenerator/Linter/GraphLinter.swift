@@ -162,7 +162,7 @@ public class GraphLinter: GraphLinting {
 
     /// It verifies setup for packages
     ///
-    /// - Parameter graph: Project graph.
+    /// - Parameter graphTraverser: Project graph.
     /// - Returns: Linting issues.
     private func lintPackageDependencies(graphTraverser: GraphTraversing) -> [LintingIssue] {
         guard graphTraverser.hasPackages else { return [] }
@@ -394,6 +394,9 @@ public class GraphLinter: GraphLinting {
             LintableTarget(platform: .macOS, product: .framework),
             LintableTarget(platform: .macOS, product: .staticFramework),
             LintableTarget(platform: .macOS, product: .appExtension),
+            LintableTarget(platform: .macOS, product: .app),
+            LintableTarget(platform: .macOS, product: .commandLineTool),
+            LintableTarget(platform: .macOS, product: .xpc),
         ],
         LintableTarget(platform: .macOS, product: .staticLibrary): [
             LintableTarget(platform: .macOS, product: .staticLibrary),
@@ -442,6 +445,10 @@ public class GraphLinter: GraphLinting {
             LintableTarget(platform: .macOS, product: .dynamicLibrary),
             LintableTarget(platform: .macOS, product: .staticFramework),
             LintableTarget(platform: .macOS, product: .framework),
+        ],
+        LintableTarget(platform: .macOS, product: .xpc): [
+            LintableTarget(platform: .macOS, product: .staticLibrary),
+            LintableTarget(platform: .macOS, product: .staticFramework),
         ],
         LintableTarget(platform: .tvOS, product: .app): [
             LintableTarget(platform: .tvOS, product: .staticLibrary),
@@ -555,6 +562,13 @@ public class GraphLinter: GraphLinting {
             LintableTarget(platform: .watchOS, product: .dynamicLibrary),
             LintableTarget(platform: .watchOS, product: .framework),
             LintableTarget(platform: .watchOS, product: .staticFramework),
+        ],
+
+        LintableTarget(platform: .watchOS, product: .appExtension): [
+            LintableTarget(platform: .watchOS, product: .staticLibrary),
+            LintableTarget(platform: .watchOS, product: .dynamicLibrary),
+            LintableTarget(platform: .watchOS, product: .staticFramework),
+            LintableTarget(platform: .watchOS, product: .framework),
         ],
     ]
 }

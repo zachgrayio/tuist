@@ -116,10 +116,13 @@ public protocol PackageInfoMapping {
     ///   - baseSettings: Base settings
     ///   - targetSettings: Settings to apply to denoted targets
     ///   - configuration: Configure automatic schemes and resource accessors generation for Swift Package
-    ///   - minDeploymentTargets: Minimum support deployment target per platform
+    ///   - projectOptions: Additional options related to the `Project`
     ///   - targetToPlatform: Mapping from a target name to its platform
+    ///   - minDeploymentTargets: Minimum support deployment target per platform
+    ///   - platforms: Set of supported platforms
     ///   - targetToProducts: Mapping from a target name to its products
     ///   - targetToResolvedDependencies: Mapping from a target name to its dependencies
+    ///   - targetToModuleMap: Mapping from a target name to its module map
     ///   - packageToProject: Mapping from a package name to its path
     ///   - swiftToolsVersion: The version of Swift tools that will be used to map dependencies
     /// - Returns: Mapped project
@@ -364,6 +367,7 @@ public final class PackageInfoMapper: PackageInfoMapping {
                     "RxTest", // https://github.com/ReactiveX/RxSwift
                     "RxTest-Dynamic", // https://github.com/ReactiveX/RxSwift
                     "SnapshotTesting", // https://github.com/pointfreeco/swift-snapshot-testing
+                    "SwiftyMocky", // https://github.com/MakeAWishFoundation/SwiftyMocky
                     "TempuraTesting", // https://github.com/BendingSpoons/tempura-swift
                     "TSCTestSupport", // https://github.com/apple/swift-tools-support-core
                     "ViewInspector", // https://github.com/nalexn/ViewInspector
@@ -534,7 +538,7 @@ extension ProjectDescription.Target {
                 .sanitize(targetName: target.name)
                 .replacingOccurrences(of: "-", with: "_"),
             bundleId: target.name
-                .replacingOccurrences(of: "_", with: "-"),
+                .replacingOccurrences(of: "_", with: "."),
             deploymentTarget: deploymentTarget,
             infoPlist: .default,
             sources: sources,
@@ -1071,6 +1075,8 @@ extension ProjectDescription.Product {
             return .stickerPackExtension
         case .appClip:
             return .appClip
+        case .xpc:
+            return .xpc
         }
     }
 }
@@ -1140,8 +1146,12 @@ extension ProjectDescription.DefaultSettings {
 extension ProjectDescription.DeploymentTarget {
     fileprivate static func from(deploymentTarget: TuistGraph.DeploymentTarget) -> Self {
         switch deploymentTarget {
-        case let .iOS(version, devices):
-            return .iOS(targetVersion: version, devices: .from(devices: devices))
+        case let .iOS(version, devices, supportsMacDesignedForIOS):
+            return .iOS(
+                targetVersion: version,
+                devices: .from(devices: devices),
+                supportsMacDesignedForIOS: supportsMacDesignedForIOS
+            )
         case let .macOS(version):
             return .macOS(targetVersion: version)
         case let .tvOS(version):

@@ -38,10 +38,11 @@ final class TargetScriptsContentHasherTests: TuistUnitTestCase {
         order: TargetScript.Order = .pre,
         tool: String = "tool1",
         arguments: [String] = ["arg1", "arg2"],
-        inputPaths: [AbsolutePath] = [AbsolutePath("/inputPaths1")],
-        inputFileListPaths: [AbsolutePath] = [AbsolutePath("/inputFileListPaths1")],
-        outputPaths: [AbsolutePath] = [AbsolutePath("/outputPaths1")],
-        outputFileListPaths: [AbsolutePath] = [AbsolutePath("/outputFileListPaths1")]
+        inputPaths: [AbsolutePath] = [try! AbsolutePath(validating: "/inputPaths1")],
+        inputFileListPaths: [AbsolutePath] = [try! AbsolutePath(validating: "/inputFileListPaths1")],
+        outputPaths: [AbsolutePath] = [try! AbsolutePath(validating: "/outputPaths1")],
+        outputFileListPaths: [AbsolutePath] = [try! AbsolutePath(validating: "/outputFileListPaths1")],
+        dependencyFile: AbsolutePath = try! AbsolutePath(validating: "/dependencyFile1")
     ) -> TargetScript {
         TargetScript(
             name: name,
@@ -50,7 +51,8 @@ final class TargetScriptsContentHasherTests: TuistUnitTestCase {
             inputPaths: inputPaths,
             inputFileListPaths: inputFileListPaths,
             outputPaths: outputPaths,
-            outputFileListPaths: outputFileListPaths
+            outputFileListPaths: outputFileListPaths,
+            dependencyFile: dependencyFile
         )
     }
 
@@ -59,12 +61,13 @@ final class TargetScriptsContentHasherTests: TuistUnitTestCase {
     func test_hash_targetAction_withBuildVariables_callsMockHasherWithOnlyPathWithoutBuildVariable() throws {
         // Given
         let inputFileListPaths1 = "inputFileListPaths1-hash"
-        mockContentHasher.stubHashForPath[AbsolutePath("/inputFileListPaths1")] = inputFileListPaths1
+        mockContentHasher.stubHashForPath[try AbsolutePath(validating: "/inputFileListPaths1")] = inputFileListPaths1
         let targetScript = makeTargetScript(
-            inputPaths: [AbsolutePath("/$(SRCROOT)/inputPaths1")],
-            inputFileListPaths: [AbsolutePath("/inputFileListPaths1")],
-            outputPaths: [AbsolutePath("/$(DERIVED_FILE_DIR)/outputPaths1")],
-            outputFileListPaths: [AbsolutePath("/outputFileListPaths1")]
+            inputPaths: [try AbsolutePath(validating: "/$(SRCROOT)/inputPaths1")],
+            inputFileListPaths: [try AbsolutePath(validating: "/inputFileListPaths1")],
+            outputPaths: [try AbsolutePath(validating: "/$(DERIVED_FILE_DIR)/outputPaths1")],
+            outputFileListPaths: [try AbsolutePath(validating: "/outputFileListPaths1")],
+            dependencyFile: try AbsolutePath(validating: "/$(DERIVED_FILE_DIR)/file.d")
         )
 
         // When
@@ -73,6 +76,7 @@ final class TargetScriptsContentHasherTests: TuistUnitTestCase {
         // Then
         let expected = [
             "$(SRCROOT)/inputPaths1",
+            "$(DERIVED_FILE_DIR)/file.d",
             inputFileListPaths1,
             "$(DERIVED_FILE_DIR)/outputPaths1",
             "outputFileListPaths1",
@@ -93,8 +97,10 @@ final class TargetScriptsContentHasherTests: TuistUnitTestCase {
         // Given
         let inputPaths1Hash = "inputPaths1-hash"
         let inputFileListPaths1 = "inputFileListPaths1-hash"
-        mockContentHasher.stubHashForPath[AbsolutePath("/inputPaths1")] = inputPaths1Hash
-        mockContentHasher.stubHashForPath[AbsolutePath("/inputFileListPaths1")] = inputFileListPaths1
+        let dependencyFileHash = "dependencyFile1-hash"
+        mockContentHasher.stubHashForPath[try AbsolutePath(validating: "/inputPaths1")] = inputPaths1Hash
+        mockContentHasher.stubHashForPath[try AbsolutePath(validating: "/inputFileListPaths1")] = inputFileListPaths1
+        mockContentHasher.stubHashForPath[try AbsolutePath(validating: "/dependencyFile1")] = dependencyFileHash
         let targetScript = makeTargetScript()
 
         // When
@@ -104,6 +110,7 @@ final class TargetScriptsContentHasherTests: TuistUnitTestCase {
         let expected = [
             inputPaths1Hash,
             inputFileListPaths1,
+            dependencyFileHash,
             "outputPaths1",
             "outputFileListPaths1",
             "1",
@@ -119,8 +126,11 @@ final class TargetScriptsContentHasherTests: TuistUnitTestCase {
         // Given
         let inputPaths1Hash = "inputPaths1-hash"
         let inputFileListPaths1 = "inputFileListPaths1-hash"
-        mockContentHasher.stubHashForPath[AbsolutePath("/inputPaths1")] = inputPaths1Hash
-        mockContentHasher.stubHashForPath[AbsolutePath("/inputFileListPaths1")] = inputFileListPaths1
+        let dependencyFileHash = "dependencyFile1-hash"
+        mockContentHasher.stubHashForPath[try AbsolutePath(validating: "/inputPaths1")] = inputPaths1Hash
+        mockContentHasher.stubHashForPath[try AbsolutePath(validating: "/inputFileListPaths1")] = inputFileListPaths1
+        mockContentHasher.stubHashForPath[try AbsolutePath(validating: "/dependencyFile1")] = dependencyFileHash
+
         let targetScript = makeTargetScript()
 
         // When
@@ -130,6 +140,7 @@ final class TargetScriptsContentHasherTests: TuistUnitTestCase {
         let expected = [
             inputPaths1Hash,
             inputFileListPaths1,
+            dependencyFileHash,
             "outputPaths1",
             "outputFileListPaths1",
             "1",
@@ -145,16 +156,20 @@ final class TargetScriptsContentHasherTests: TuistUnitTestCase {
         // Given
         let inputPaths2Hash = "inputPaths2-hash"
         let inputFileListPaths2 = "inputFileListPaths2-hash"
-        mockContentHasher.stubHashForPath[AbsolutePath("/inputPaths2")] = inputPaths2Hash
-        mockContentHasher.stubHashForPath[AbsolutePath("/inputFileListPaths2")] = inputFileListPaths2
+        let dependencyFileHash = "/dependencyFilePath4-hash"
+        mockContentHasher.stubHashForPath[try AbsolutePath(validating: "/inputPaths2")] = inputPaths2Hash
+        mockContentHasher.stubHashForPath[try AbsolutePath(validating: "/inputFileListPaths2")] = inputFileListPaths2
+        mockContentHasher.stubHashForPath[try AbsolutePath(validating: "/dependencyFilePath4")] = dependencyFileHash
+
         let targetScript = makeTargetScript(
             name: "2",
             order: .post,
             tool: "tool2",
-            inputPaths: [AbsolutePath("/inputPaths2")],
-            inputFileListPaths: [AbsolutePath("/inputFileListPaths2")],
-            outputPaths: [AbsolutePath("/outputPaths2")],
-            outputFileListPaths: [AbsolutePath("/outputFileListPaths2")]
+            inputPaths: [try AbsolutePath(validating: "/inputPaths2")],
+            inputFileListPaths: [try AbsolutePath(validating: "/inputFileListPaths2")],
+            outputPaths: [try AbsolutePath(validating: "/outputPaths2")],
+            outputFileListPaths: [try AbsolutePath(validating: "/outputFileListPaths2")],
+            dependencyFile: try AbsolutePath(validating: "/dependencyFilePath4")
         )
 
         // When
@@ -164,6 +179,7 @@ final class TargetScriptsContentHasherTests: TuistUnitTestCase {
         let expected = [
             inputPaths2Hash,
             inputFileListPaths2,
+            dependencyFileHash,
             "outputPaths2",
             "outputFileListPaths2",
             "2",

@@ -24,3 +24,5 @@ type_name:
     warning: 1
 excluded:
   - Sources/BazelProto
+  - Sources/TuistCloud/graphql
+  - Sources/TuistCloudSchema

@@ -17,5 +17,5 @@ let config = Config(
     //      url: cacheUrl(),
     //      authToken: authToken()
     //  ),
-    swiftVersion: .init("5.4.0")
+    swiftVersion: .init("5.6.0")
 )
