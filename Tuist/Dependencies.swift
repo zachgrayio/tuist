@@ -25,6 +25,6 @@ let dependencies = Dependencies(
         productTypes: [
             "Logging": .framework,
         ]
-    )
+    ),
     platforms: [.macOS],
 )
