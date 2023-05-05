@@ -40,7 +40,7 @@ public final class FlareCacheRemoteStorage: CacheStoring {
 
     private let fileArchiverFactory: FileArchivingFactorying
     private let cacheDirectoriesProvider: CacheDirectoriesProviding
-    private let flareConfig: Flare
+    private let bitriseConfig: Bitrise
     private let group: EventLoopGroup = PlatformSupport.makeEventLoopGroup(loopCount: 100)
     private var channel: GRPCChannel?
     private var casClient: CASClient?
@@ -55,22 +55,22 @@ public final class FlareCacheRemoteStorage: CacheStoring {
     // MARK: - Init
 
     public convenience init(
-        flareConfig: Flare,
+        bitriseConfig: Bitrise,
         cacheDirectoriesProvider: CacheDirectoriesProviding
     ) {
         self.init(
-            flareConfig: flareConfig,
+            bitriseConfig: bitriseConfig,
             fileArchiverFactory: FileArchivingFactory(),
             cacheDirectoriesProvider: cacheDirectoriesProvider
         )
     }
 
     init(
-        flareConfig: Flare,
+        bitriseConfig: Bitrise,
         fileArchiverFactory: FileArchivingFactorying,
         cacheDirectoriesProvider: CacheDirectoriesProviding
     ) {
-        self.flareConfig = flareConfig
+        self.bitriseConfig = bitriseConfig
         self.fileArchiverFactory = fileArchiverFactory
         self.cacheDirectoriesProvider = cacheDirectoriesProvider
         initClients()
@@ -189,7 +189,7 @@ public final class FlareCacheRemoteStorage: CacheStoring {
     }
 
     private func initClients() {
-        if let target = URLComponents(string: flareConfig.url) {
+        if let target = URLComponents(string: bitriseConfig.url) {
             let secure: Bool = target.scheme != nil && target.scheme!.contains("grpcs")
             let tls = GRPCTLSConfiguration.makeClientConfigurationBackedByNIOSSL()
             let co = callOptions(withTimeout: defaultTimeout)
@@ -230,12 +230,15 @@ public final class FlareCacheRemoteStorage: CacheStoring {
             }
         }
         let mdString = try! reqMd.serializedData().base64EncodedString() // swiftlint:disable:this force_try
-        let hdrs = [
+        var hdrs = [
             ("x-flare-buildtool", "tuist"),
-            ("authorization", "Bearer \(flareConfig.authToken)"),
+            ("authorization", "Bearer \(bitriseConfig.authToken)"),
             ("build.bazel.remote.execution.v2.requestmetadata-bin", mdString),
-            // additional headers here
         ]
+//        if (!self.bitriseConfig.workspaceId.isEmpty) {
+//            hdrs.append(("x-org-id", self.bitriseConfig.workspaceId))
+//        }
+        
         return CallOptions(customMetadata: HPACKHeaders(hdrs), timeLimit: .timeout(timeout))
     }
 

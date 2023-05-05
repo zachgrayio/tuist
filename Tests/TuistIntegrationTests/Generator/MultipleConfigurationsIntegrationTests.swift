@@ -376,7 +376,7 @@ final class MultipleConfigurationsIntegrationTests: TuistUnitTestCase {
             compatibleXcodeVersions: .all,
             cloud: nil,
             cache: .default,
-            flare: nil,
+            bitrise: nil,
             swiftVersion: nil,
             plugins: [],
             generationOptions: .test(),

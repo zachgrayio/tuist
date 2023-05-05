@@ -28,7 +28,7 @@ final class CacheStorageProvider: CacheStorageProviding {
     private let config: Config
     private let cacheDirectoryProviderFactory: CacheDirectoriesProviderFactoring
     private let cloudAuthenticationController: CloudAuthenticationControlling
-    private let flareAuthenticationController: FlareAuthenticationControlling
+    private let bitriseAuthenticationController: BitriseAuthenticationControlling
 
     /// Cached response for list of storages
     @Atomic
@@ -41,7 +41,7 @@ final class CacheStorageProvider: CacheStorageProviding {
             config: config,
             cacheDirectoryProviderFactory: CacheDirectoriesProviderFactory(),
             cloudAuthenticationController: CloudAuthenticationController(),
-            flareAuthenticationController: FlareAuthenticationController()
+            bitriseAuthenticationController: BitriseAuthenticationController()
         )
     }
 
@@ -49,17 +49,17 @@ final class CacheStorageProvider: CacheStorageProviding {
         config: Config,
         cacheDirectoryProviderFactory: CacheDirectoriesProviderFactoring,
         cloudAuthenticationController: CloudAuthenticationControlling,
-        flareAuthenticationController: FlareAuthenticationControlling
+        bitriseAuthenticationController: BitriseAuthenticationControlling
     ) {
         self.config = config
         self.cacheDirectoryProviderFactory = cacheDirectoryProviderFactory
         self.cloudAuthenticationController = cloudAuthenticationController
-        self.flareAuthenticationController = flareAuthenticationController
+        self.bitriseAuthenticationController = bitriseAuthenticationController
     }
 
     func storages() throws -> [CacheStoring] {
         if let storages = Self.storages {
-            logger.warning("setup flare - init'd already")
+            logger.warning("setup Bitrise - init'd already")
             return storages
         }
         let cacheDirectoriesProvider = try cacheDirectoryProviderFactory.cacheDirectories(config: config)
@@ -87,13 +87,11 @@ final class CacheStorageProvider: CacheStorageProviding {
             }
         }
         if !cloudCacheConfigured {
-            if let effectiveConfig = flareAuthenticationController.effectiveFlareConfig(config.flare) {
+            if let effectiveConfig = bitriseAuthenticationController.effectiveBitriseConfig(config.bitrise) {
                 logger.info("🤖 Bitrise remote cache enabled!", metadata: .success)
-                logger.debug("Bitrise cache URL: \(effectiveConfig.url)")
-                logger.debug("Bitrise cache token: \(effectiveConfig.authToken)")
 
                 let flareRemoteStorage = FlareCacheRemoteStorage(
-                    flareConfig: effectiveConfig,
+                    bitriseConfig: effectiveConfig,
                     cacheDirectoriesProvider: cacheDirectoriesProvider
                 )
                 let storage = RetryingCacheStorage(cacheStoring: flareRemoteStorage)

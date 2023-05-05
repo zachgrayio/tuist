@@ -2,11 +2,11 @@ import Foundation
 import TuistGraph
 import TuistSupport
 
-public protocol FlareAuthenticationControlling {
-    func effectiveFlareConfig(_ flareConfig: Flare?) -> Flare?
+public protocol BitriseAuthenticationControlling {
+    func effectiveBitriseConfig(_ bitriseConfig: Bitrise?) -> Bitrise?
 }
 
-public final class FlareAuthenticationController: FlareAuthenticationControlling {
+public final class BitriseAuthenticationController: BitriseAuthenticationControlling {
     private let environmentVariables: () -> [String: String]
 
     public init(
@@ -15,21 +15,21 @@ public final class FlareAuthenticationController: FlareAuthenticationControlling
         self.environmentVariables = environmentVariables
     }
 
-    public func effectiveFlareConfig(_ flareConfig: Flare?) -> Flare? {
+    public func effectiveBitriseConfig(_ bitriseConfig: Bitrise?) -> Bitrise? {
         let environment = environmentVariables()
         let urlFromEnvironment = environment[envKeyUrl]?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         let tokenFromEnvironment = environment[envKeyToken]?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
 
         if !urlFromEnvironment.isEmpty, !tokenFromEnvironment.isEmpty {
-            return Flare(url: urlFromEnvironment, authToken: tokenFromEnvironment)
-        } else if (flareConfig?.url ?? "").isEmpty, (flareConfig?.authToken ?? "").isEmpty {
+            return Bitrise(url: urlFromEnvironment, workspaceId: "", authToken: tokenFromEnvironment)
+        } else if (bitriseConfig?.url ?? "").isEmpty, (bitriseConfig?.authToken ?? "").isEmpty {
             logger
                 .warning(
                     "No Bitrise remote cache configured via env vars nor in Config.swift. Continuing without remote cache..."
                 )
             return nil
         } else {
-            return flareConfig
+            return bitriseConfig
         }
     }
 }

@@ -13,9 +13,14 @@ let config = Config(
     // - REMOTE_CACHE_ENDPOINT
     // - REMOTE_CACHE_TOKEN
 
-    //  flare: .flare(
-    //      url: cacheUrl(),
-    //      authToken: authToken()
-    //  ),
+     bitrise: .bitrise(
+         url: "grpcs://pluggable.services.bitrise.io",
+         workspaceId: "bab000bcec3bd0c1",
+         authToken: "RLparvsdxjhiB8Z7dl-NEHYt7aNNWhR7ieoHhYjGJW-vJ6-5oWZVU3N4njl06K-ONu17rrt0VaQlsG1ITy6zVw"
+     ),
+
+
+    // bitrise: .bitrise(url: "", workspaceId: "", authToken: ""),
+
     swiftVersion: .init("5.6.0")
 )
