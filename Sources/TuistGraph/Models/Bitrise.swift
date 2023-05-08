@@ -4,14 +4,13 @@ import Foundation
 public struct Bitrise: Equatable, Hashable {
     /// The base URL that points to the server
     public let url: String
-    
+
     /// Bitrise workspace ID this project is associated with (local connections only)
     /// This should be only defined if `authToken` is a Bitrise PAT
     public let workspaceId: String
 
     /// The auth token (either a JWT token or a Bitrise PAT)
     public let authToken: String
-    
 
     /// Returns a Bitrise configuration.
     ///   - url: Base URL to the Cloud server.

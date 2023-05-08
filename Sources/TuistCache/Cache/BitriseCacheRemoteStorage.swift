@@ -35,7 +35,7 @@ enum FlareCacheRemoteStorageError: FatalError, Equatable {
     }
 }
 
-public final class FlareCacheRemoteStorage: CacheStoring {
+public final class BitriseCacheRemoteStorage: CacheStoring {
     // MARK: - Attributes
 
     private let fileArchiverFactory: FileArchivingFactorying
@@ -235,10 +235,10 @@ public final class FlareCacheRemoteStorage: CacheStoring {
             ("authorization", "Bearer \(bitriseConfig.authToken)"),
             ("build.bazel.remote.execution.v2.requestmetadata-bin", mdString),
         ]
-//        if (!self.bitriseConfig.workspaceId.isEmpty) {
-//            hdrs.append(("x-org-id", self.bitriseConfig.workspaceId))
-//        }
-        
+        if !bitriseConfig.workspaceId.isEmpty {
+            hdrs.append(("x-org-id", bitriseConfig.workspaceId))
+        }
+
         return CallOptions(customMetadata: HPACKHeaders(hdrs), timeLimit: .timeout(timeout))
     }
 

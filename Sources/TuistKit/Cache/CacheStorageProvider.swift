@@ -90,11 +90,11 @@ final class CacheStorageProvider: CacheStorageProviding {
             if let effectiveConfig = bitriseAuthenticationController.effectiveBitriseConfig(config.bitrise) {
                 logger.info("🤖 Bitrise remote cache enabled!", metadata: .success)
 
-                let flareRemoteStorage = FlareCacheRemoteStorage(
+                let bitriseRemoteStorage = BitriseCacheRemoteStorage(
                     bitriseConfig: effectiveConfig,
                     cacheDirectoriesProvider: cacheDirectoriesProvider
                 )
-                let storage = RetryingCacheStorage(cacheStoring: flareRemoteStorage)
+                let storage = RetryingCacheStorage(cacheStoring: bitriseRemoteStorage)
                 storages.append(storage)
                 cloudCacheConfigured = true
             }

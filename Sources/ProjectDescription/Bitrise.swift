@@ -7,7 +7,7 @@ public struct Bitrise: Codable, Equatable {
 
     /// The Bitrise workspace ID this project is associated with (local usage only)
     public let workspaceId: String
-    
+
     /// The auth token (local usage only)
     public let authToken: String
 
@@ -15,9 +15,13 @@ public struct Bitrise: Codable, Equatable {
     /// - Parameters:
     ///   - url: Base URL to the Cloud server.
     ///   - workspaceId: Bitrise workspace ID this project is associated with (local connections only)
-    ///   - authToken: Auth token (local connections only)
+    ///   - authToken: Auth token
     /// - Returns: A Bitrise instance.
-    public static func bitrise(url: String, workspaceId: String, authToken: String) -> Bitrise {
+    public static func bitrise(
+        url: String = "grpcs://pluggable.services.bitrise.io",
+        workspaceId: String,
+        authToken: String
+    ) -> Bitrise {
         Bitrise(url: url, workspaceId: workspaceId, authToken: authToken)
     }
 }
