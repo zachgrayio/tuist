@@ -14,7 +14,7 @@ let config = Config(
     // - REMOTE_CACHE_TOKEN
 
     bitrise: .bitrise(
-        workspaceId: "bab000bcec3bd0c1",
+        workspaceId: Environment.bitriseWorkspaceId.getString(default: ""),
         authToken: Environment.bitriseAuthToken.getString(default: "")
     ),
 
