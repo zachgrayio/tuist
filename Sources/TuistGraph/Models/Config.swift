@@ -19,8 +19,8 @@ public struct Config: Equatable, Hashable {
     /// Cache configuration.
     public let cache: Cache?
 
-    /// Flare configuration.
-    public let flare: Flare?
+    /// Bitrise configuration.
+    public let bitrise: Bitrise?
 
     /// The version of Swift that will be used by Tuist.
     /// If `nil` is passed then Tuist will use the environment’s version.
@@ -35,7 +35,7 @@ public struct Config: Equatable, Hashable {
             compatibleXcodeVersions: .all,
             cloud: nil,
             cache: nil,
-            flare: nil,
+            bitrise: nil,
             swiftVersion: nil,
             plugins: [],
             generationOptions: .init(
@@ -60,7 +60,7 @@ public struct Config: Equatable, Hashable {
         compatibleXcodeVersions: CompatibleXcodeVersions,
         cloud: Cloud?,
         cache: Cache?,
-        flare: Flare?,
+        bitrise: Bitrise?,
         swiftVersion: Version?,
         plugins: [PluginLocation],
         generationOptions: GenerationOptions,
@@ -69,7 +69,7 @@ public struct Config: Equatable, Hashable {
         self.compatibleXcodeVersions = compatibleXcodeVersions
         self.cloud = cloud
         self.cache = cache
-        self.flare = flare
+        self.bitrise = bitrise
         self.swiftVersion = swiftVersion
         self.plugins = plugins
         self.generationOptions = generationOptions
@@ -82,7 +82,7 @@ public struct Config: Equatable, Hashable {
         hasher.combine(generationOptions)
         hasher.combine(cloud)
         hasher.combine(cache)
-        hasher.combine(flare)
+        hasher.combine(bitrise)
         hasher.combine(swiftVersion)
         hasher.combine(compatibleXcodeVersions)
     }

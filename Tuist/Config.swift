@@ -13,9 +13,10 @@ let config = Config(
     // - REMOTE_CACHE_ENDPOINT
     // - REMOTE_CACHE_TOKEN
 
-    //  flare: .flare(
-    //      url: cacheUrl(),
-    //      authToken: authToken()
-    //  ),
+    bitrise: .bitrise(
+        workspaceId: Environment.bitriseWorkspaceId.getString(default: ""),
+        authToken: Environment.bitriseAuthToken.getString(default: "")
+    ),
+
     swiftVersion: .init("5.6.0")
 )

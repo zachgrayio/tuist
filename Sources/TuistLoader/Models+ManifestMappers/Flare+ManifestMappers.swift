@@ -5,8 +5,8 @@ import TuistCore
 import TuistGraph
 import TuistSupport
 
-extension TuistGraph.Flare {
-    static func from(manifest: ProjectDescription.Flare) throws -> TuistGraph.Flare {
-        TuistGraph.Flare(url: manifest.url, authToken: manifest.authToken)
+extension TuistGraph.Bitrise {
+    static func from(manifest: ProjectDescription.Bitrise) throws -> TuistGraph.Bitrise {
+        TuistGraph.Bitrise(url: manifest.url, workspaceId: manifest.workspaceId, authToken: manifest.authToken)
     }
 }

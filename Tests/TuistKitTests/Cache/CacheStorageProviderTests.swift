@@ -11,18 +11,18 @@ final class CacheStorageProviderTests: TuistUnitTestCase {
     private var subject: CacheStorageProvider!
     private var cacheDirectoryProviderFactory: MockCacheDirectoriesProviderFactory!
     private var cloudAuthenticationController: MockCloudAuthenticationController!
-    private var flareAuthenticationController: FlareAuthenticationControlling!
+    private var bitriseAuthenticationController: BitriseAuthenticationControlling!
 
     override func setUpWithError() throws {
         try super.setUpWithError()
         cacheDirectoryProviderFactory = MockCacheDirectoriesProviderFactory(provider: try MockCacheDirectoriesProvider())
         cloudAuthenticationController = MockCloudAuthenticationController()
-        flareAuthenticationController = FlareAuthenticationController()
+        bitriseAuthenticationController = BitriseAuthenticationController()
         subject = CacheStorageProvider(
             config: .test(),
             cacheDirectoryProviderFactory: cacheDirectoryProviderFactory,
             cloudAuthenticationController: cloudAuthenticationController,
-            flareAuthenticationController: flareAuthenticationController
+            bitriseAuthenticationController: bitriseAuthenticationController
         )
     }
 
@@ -40,7 +40,7 @@ final class CacheStorageProviderTests: TuistUnitTestCase {
             config: .test(cloud: .test(options: [])),
             cacheDirectoryProviderFactory: cacheDirectoryProviderFactory,
             cloudAuthenticationController: cloudAuthenticationController,
-            flareAuthenticationController: flareAuthenticationController
+            bitriseAuthenticationController: bitriseAuthenticationController
         )
         cloudAuthenticationController.authenticationTokenStub = { _ in
             "token"
@@ -60,7 +60,7 @@ final class CacheStorageProviderTests: TuistUnitTestCase {
             config: .test(cloud: .test(options: [])),
             cacheDirectoryProviderFactory: cacheDirectoryProviderFactory,
             cloudAuthenticationController: cloudAuthenticationController,
-            flareAuthenticationController: flareAuthenticationController
+            bitriseAuthenticationController: bitriseAuthenticationController
         )
         cloudAuthenticationController.authenticationTokenStub = { _ in
             nil
@@ -79,7 +79,7 @@ final class CacheStorageProviderTests: TuistUnitTestCase {
             config: .test(cloud: .test(options: [.optional])),
             cacheDirectoryProviderFactory: cacheDirectoryProviderFactory,
             cloudAuthenticationController: cloudAuthenticationController,
-            flareAuthenticationController: flareAuthenticationController
+            bitriseAuthenticationController: bitriseAuthenticationController
         )
         cloudAuthenticationController.authenticationTokenStub = { _ in
             nil
@@ -102,7 +102,7 @@ final class CacheStorageProviderTests: TuistUnitTestCase {
             config: .test(cloud: nil),
             cacheDirectoryProviderFactory: cacheDirectoryProviderFactory,
             cloudAuthenticationController: cloudAuthenticationController,
-            flareAuthenticationController: flareAuthenticationController
+            bitriseAuthenticationController: bitriseAuthenticationController
         )
         cloudAuthenticationController.authenticationTokenStub = { _ in
             nil

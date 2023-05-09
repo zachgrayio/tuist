@@ -63,7 +63,7 @@ final class SwiftPackageManagerInteractorTests: TuistUnitTestCase {
             compatibleXcodeVersions: .all,
             cloud: nil,
             cache: nil,
-            flare: nil,
+            bitrise: nil,
             swiftVersion: nil,
             plugins: [],
             generationOptions: .test(resolveDependenciesWithSystemScm: true),
