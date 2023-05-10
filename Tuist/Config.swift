@@ -13,10 +13,10 @@ let config = Config(
     // - REMOTE_CACHE_ENDPOINT
     // - REMOTE_CACHE_TOKEN
 
-    bitrise: .bitrise(
-        workspaceId: Environment.bitriseWorkspaceId.getString(default: ""),
-        authToken: Environment.bitriseAuthToken.getString(default: "")
-    ),
+    // bitrise: .bitrise(
+    //     workspaceId: Environment.bitriseWorkspaceId.getString(default: ""),
+    //     authToken: Environment.bitriseAuthToken.getString(default: "")
+    // ),
 
     swiftVersion: .init("5.6.0")
 )
