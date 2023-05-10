@@ -57,8 +57,8 @@ public final class BitriseCacheRemoteStorage: CacheStoring {
     public convenience init(
         bitriseConfig: Bitrise,
         cacheDirectoriesProvider: CacheDirectoriesProviding
-    ) {
-        self.init(
+    ) throws {
+        try self.init(
             bitriseConfig: bitriseConfig,
             fileArchiverFactory: FileArchivingFactory(),
             cacheDirectoriesProvider: cacheDirectoriesProvider
@@ -69,11 +69,11 @@ public final class BitriseCacheRemoteStorage: CacheStoring {
         bitriseConfig: Bitrise,
         fileArchiverFactory: FileArchivingFactorying,
         cacheDirectoriesProvider: CacheDirectoriesProviding
-    ) {
+    ) throws {
         self.bitriseConfig = bitriseConfig
         self.fileArchiverFactory = fileArchiverFactory
         self.cacheDirectoriesProvider = cacheDirectoriesProvider
-        initClients()
+        try initClients()
     }
 
     deinit {
@@ -188,7 +188,7 @@ public final class BitriseCacheRemoteStorage: CacheStoring {
         return (fileData.count, fileHash, reqs)
     }
 
-    private func initClients() {
+    private func initClients() throws {
         if let target = URLComponents(string: bitriseConfig.url) {
             let secure: Bool = target.scheme != nil && target.scheme!.contains("grpcs")
             let tls = GRPCTLSConfiguration.makeClientConfigurationBackedByNIOSSL()
@@ -208,7 +208,7 @@ public final class BitriseCacheRemoteStorage: CacheStoring {
                 capClient = CapabilitiesClient(channel: chan, defaultCallOptions: co)
                 casClient = CASClient(channel: chan, defaultCallOptions: co)
                 kvClient = KVStorageClient(channel: chan, defaultCallOptions: co)
-                runBlocking {
+                try runBlocking {
                     do {
                         try await self.checkCapabilities()
                     } catch {
@@ -308,11 +308,8 @@ extension SHA256 {
     }
 }
 
-func runBlocking(task: @escaping () async throws -> Void) {
-    let semaphore = DispatchSemaphore(value: 0)
-    Task { [task] in
+func runBlocking(task: @escaping () async throws -> Void) rethrows {
+    Task {
         try await task()
-        semaphore.signal()
     }
-    semaphore.wait()
 }
