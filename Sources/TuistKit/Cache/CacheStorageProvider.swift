@@ -59,7 +59,6 @@ final class CacheStorageProvider: CacheStorageProviding {
 
     func storages() throws -> [CacheStoring] {
         if let storages = Self.storages {
-            logger.warning("setup Bitrise - init'd already")
             return storages
         }
         let cacheDirectoriesProvider = try cacheDirectoryProviderFactory.cacheDirectories(config: config)
@@ -90,7 +89,7 @@ final class CacheStorageProvider: CacheStorageProviding {
             if let effectiveConfig = bitriseAuthenticationController.effectiveBitriseConfig(config.bitrise) {
                 logger.info("🤖 Bitrise remote cache enabled!", metadata: .success)
 
-                let bitriseRemoteStorage = BitriseCacheRemoteStorage(
+                let bitriseRemoteStorage = try BitriseCacheRemoteStorage(
                     bitriseConfig: effectiveConfig,
                     cacheDirectoriesProvider: cacheDirectoriesProvider
                 )
