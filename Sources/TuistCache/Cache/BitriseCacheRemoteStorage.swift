@@ -87,7 +87,8 @@ public final class BitriseCacheRemoteStorage: CacheStoring {
 
     public func exists(name: String, hash: String) async throws -> Bool {
         guard let client = casClient else {
-            throw FlareCacheRemoteStorageError.connectionFailed
+            logger.error("The backend gRPC cache service is unavailable, or the connection failed.")
+            return false
         }
         let req: FindMissingReq = make {
             $0.instanceName = self.instanceName
@@ -95,11 +96,17 @@ public final class BitriseCacheRemoteStorage: CacheStoring {
                 $0.hash = hash
             }]
         }
-        if try await !client.findMissingBlobs(req).missingBlobDigests.isEmpty {
+
+        do {
+            if try await !client.findMissingBlobs(req).missingBlobDigests.isEmpty {
+                return false
+            }
+            CacheAnalytics.addRemoteCacheTargetHit(name)
+            return true
+        } catch {
+            logger.warning("Failed to check the existence of \(name) with hash \(hash)")
             return false
         }
-        CacheAnalytics.addRemoteCacheTargetHit(name)
-        return true
     }
 
     public func fetch(name: String, hash: String) async throws -> AbsolutePath {
@@ -213,7 +220,7 @@ public final class BitriseCacheRemoteStorage: CacheStoring {
                         try await self.checkCapabilities()
                     } catch {
                         logger.error("failed to initialze gRPC connection and query cache capabilties: \(error)")
-                        throw error
+                        return
                     }
                 }
             } else {
