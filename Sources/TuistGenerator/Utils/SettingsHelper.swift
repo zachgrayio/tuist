@@ -28,6 +28,7 @@ final class SettingsHelper {
         case .macOS: return .macOS
         case .tvOS: return .tvOS
         case .watchOS: return .watchOS
+        case .visionOS: return .visionOS
         }
     }
 
@@ -41,7 +42,7 @@ final class SettingsHelper {
             return .staticLibrary
         case .framework, .staticFramework:
             return .framework
-        case .appExtension, .messagesExtension:
+        case .appExtension, .messagesExtension, .extensionKitExtension:
             return .appExtension
         case .watch2Extension:
             return .watchExtension

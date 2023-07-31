@@ -122,6 +122,7 @@ final class ProjectEditor: ProjectEditing {
 
         let pathsToExclude = [
             "**/\(Constants.tuistDirectoryName)/\(Constants.DependenciesDirectory.name)/**",
+            "**/\(Constants.DependenciesDirectory.packageBuildDirectoryName)/**",
         ] + tuistIgnoreEntries
 
         let projectDescriptionPath = try resourceLocator.projectDescription()
@@ -138,7 +139,10 @@ final class ProjectEditor: ProjectEditing {
         let dependenciesPath = manifestFilesLocator.locateDependencies(at: editingPath)
 
         let helpers = helpersDirectoryLocator.locate(at: editingPath).map {
-            FileHandler.shared.glob($0, glob: "**/*.swift")
+            [
+                FileHandler.shared.glob($0, glob: "**/*.swift"),
+                FileHandler.shared.glob($0, glob: "**/*.docc"),
+            ].flatMap { $0 }
         } ?? []
 
         let templates = templatesDirectoryLocator.locateUserTemplates(at: editingPath).map {

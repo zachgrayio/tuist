@@ -73,14 +73,14 @@ class TargetLinter: TargetLinting {
     private func lintProductName(target: Target) -> [LintingIssue] {
         var allowed = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_")
 
-        if target.product == .app {
+        let allowsDot = target.product == .app || target.product == .commandLineTool
+        if allowsDot {
             allowed.formUnion(CharacterSet(charactersIn: "."))
         }
 
         if target.productName.unicodeScalars.allSatisfy(allowed.contains) == false {
-            let reason = target.product == .app ?
-                "Invalid product name '\(target.productName)'. This string must contain only alphanumeric (A-Z,a-z,0-9), period (.), and underscore (_) characters." :
-                "Invalid product name '\(target.productName)'. This string must contain only alphanumeric (A-Z,a-z,0-9), and underscore (_) characters."
+            let reason =
+                "Invalid product name '\(target.productName)'. This string must contain only alphanumeric (A-Z,a-z,0-9)\(allowsDot ? ", period (.)" : ""), and underscore (_) characters."
 
             return [LintingIssue(reason: reason, severity: .warning)]
         }
@@ -95,6 +95,11 @@ class TargetLinter: TargetLinting {
         let hasNoSources = supportsSources && sources.isEmpty
         let hasNoDependencies = target.dependencies.isEmpty
         let hasNoScripts = target.scripts.isEmpty
+
+        // macOS bundle targets can have source code, but it's optional
+        if target.platform == .macOS, target.product == .bundle, hasNoSources {
+            return []
+        }
 
         if hasNoSources, hasNoDependencies, hasNoScripts {
             return [LintingIssue(reason: "The target \(target.name) doesn't contain source files.", severity: .warning)]
@@ -213,6 +218,7 @@ class TargetLinter: TargetLinting {
         case .macOS: if platform != .macOS { return [inconsistentPlatformIssue] }
         case .watchOS: if platform != .watchOS { return [inconsistentPlatformIssue] }
         case .tvOS: if platform != .tvOS { return [inconsistentPlatformIssue] }
+        case .visionOS: if platform != .visionOS { return [inconsistentPlatformIssue] }
         }
 
         return []

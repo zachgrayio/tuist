@@ -17,6 +17,5 @@ let config = Config(
         workspaceId: Environment.bitriseWorkspaceId.getString(default: ""),
         authToken: Environment.bitriseAuthToken.getString(default: "")
     ),
-
-    swiftVersion: .init("5.6.0")
+    swiftVersion: .init("5.8")
 )

@@ -58,11 +58,11 @@ let package = Package(
         .package(url: "https://github.com/kishikawakatsumi/KeychainAccess.git", from: "4.2.2"),
         .package(url: "https://github.com/krzyzanowskim/CryptoSwift.git", from: "1.6.0"),
         .package(url: "https://github.com/rnine/Checksum.git", from: "1.0.2"),
-        .package(url: "https://github.com/stencilproject/Stencil.git", exact: "0.14.2"),
+        .package(url: "https://github.com/stencilproject/Stencil.git", exact: "0.15.1"),
         .package(url: "https://github.com/SwiftDocOrg/GraphViz.git", exact: "0.2.0"),
-        .package(url: "https://github.com/SwiftGen/StencilSwiftKit.git", exact: "2.9.0"),
+        .package(url: "https://github.com/SwiftGen/StencilSwiftKit.git", exact: "2.10.1"),
         .package(url: "https://github.com/SwiftGen/SwiftGen", exact: "6.5.1"),
-        .package(url: "https://github.com/tuist/XcodeProj.git", exact: "8.8.0"),
+        .package(url: "https://github.com/tuist/XcodeProj.git", exact: "8.11.0"),
         .package(url: "https://github.com/grpc/grpc-swift.git", from: "1.10.0"),
     ],
     targets: [
@@ -349,6 +349,7 @@ let package = Package(
             ],
             exclude: [
                 "graphql/CreateProject.graphql",
+                "graphql/ClearRemoteCacheStorage.graphql",
             ]
         ),
         .testTarget(

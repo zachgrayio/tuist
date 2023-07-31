@@ -115,10 +115,12 @@ final class InfoPlistContentProvider: InfoPlistContentProviding {
             packageType = "FMWK"
         case .watch2App, .watch2Extension, .tvTopShelfExtension:
             packageType = "$(PRODUCT_BUNDLE_PACKAGE_TYPE)"
-        case .appExtension, .stickerPackExtension, .messagesExtension, .xpc:
+        case .appExtension, .stickerPackExtension, .messagesExtension, .xpc, .extensionKitExtension:
             packageType = "XPC!"
         case .commandLineTool:
             packageType = nil
+        case .systemExtension:
+            packageType = "SYSX"
         }
 
         if let packageType = packageType {
@@ -131,7 +133,7 @@ final class InfoPlistContentProvider: InfoPlistContentProviding {
     func bundleExecutable(_ target: Target) -> [String: Any] {
         let shouldIncludeBundleExecutableKey: (Target) -> Bool = {
             switch ($0.platform, $0.product) {
-            case (.iOS, .bundle), (.tvOS, .bundle):
+            case (.iOS, .bundle), (.tvOS, .bundle), (.watchOS, .bundle), (.visionOS, .bundle):
                 return false
             default:
                 return true

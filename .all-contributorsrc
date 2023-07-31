@@ -1003,6 +1003,87 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "batuhansk",
+      "name": "Batuhan Saka",
+      "avatar_url": "https://avatars.githubusercontent.com/u/9626765?v=4",
+      "profile": "http://linkedin.com/in/batuhansaka",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "JCSooHwanCho",
+      "name": "SooHwanCho",
+      "avatar_url": "https://avatars.githubusercontent.com/u/51935215?v=4",
+      "profile": "http://jcsoohwancho.github.io",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "griches",
+      "name": "Gary Riches",
+      "avatar_url": "https://avatars.githubusercontent.com/u/798117?v=4",
+      "profile": "http://www.bouncingball.mobi",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "mustiikhalil",
+      "name": "mustiikhalil",
+      "avatar_url": "https://avatars.githubusercontent.com/u/26250654?v=4",
+      "profile": "https://mustiikhalil.github.io/mustiikhalil/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "serejahh",
+      "name": "Serhii Butenko",
+      "avatar_url": "https://avatars.githubusercontent.com/u/2575555?v=4",
+      "profile": "https://github.com/serejahh",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "petrukha-ivan",
+      "name": "Petrukha Ivan",
+      "avatar_url": "https://avatars.githubusercontent.com/u/93926277?v=4",
+      "profile": "https://github.com/petrukha-ivan",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "lo1tuma",
+      "name": "Mathias Schreck",
+      "avatar_url": "https://avatars.githubusercontent.com/u/169170?v=4",
+      "profile": "https://github.com/lo1tuma",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "Buju77",
+      "name": "Yen-Chia Lin",
+      "avatar_url": "https://avatars.githubusercontent.com/u/266349?v=4",
+      "profile": "https://github.com/Buju77",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "Mstrodl",
+      "name": "Mary ",
+      "avatar_url": "https://avatars.githubusercontent.com/u/6877780?v=4",
+      "profile": "https://coolmathgames.tech",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
@@ -1010,5 +1091,6 @@
   "projectOwner": "tuist",
   "repoType": "github",
   "repoHost": "https://github.com",
-  "skipCi": true
+  "skipCi": true,
+  "commitType": "docs"
 }

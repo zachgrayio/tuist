@@ -73,6 +73,7 @@ final class ProductTests: XCTestCase {
             .unitTests,
             .uiTests,
             .xpc,
+            .systemExtension,
         ]
         XCTAssertEqual(got, Set(expected))
     }
@@ -102,6 +103,7 @@ final class ProductTests: XCTestCase {
             .stickerPackExtension,
             .tvTopShelfExtension,
             .watch2Extension,
+            .extensionKitExtension,
         ]
         Product.allCases.forEach { product in
             if runnables.contains(product) {
@@ -189,6 +191,10 @@ final class ProductTests: XCTestCase {
 
         // XPC
         subject = Product.xpc
+        XCTAssertFalse(subject.canHostTests())
+
+        // System Extension
+        subject = Product.systemExtension
         XCTAssertFalse(subject.canHostTests())
     }
 }
