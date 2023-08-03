@@ -43,6 +43,10 @@ extension TuistGraph.Product {
             return .appClip
         case .xpc:
             return .xpc
+        case .systemExtension:
+            return .systemExtension
+        case .extensionKitExtension:
+            return .extensionKitExtension
         }
     }
 }

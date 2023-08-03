@@ -731,6 +731,7 @@ final class SchemeDescriptorsGenerator: SchemeDescriptorsGenerating {
             return XCScheme.ExecutionAction(
                 scriptText: action.scriptText,
                 title: action.title,
+                shellToInvoke: action.shellPath,
                 environmentBuildable: nil
             )
         }
@@ -745,6 +746,7 @@ final class SchemeDescriptorsGenerator: SchemeDescriptorsGenerating {
         return XCScheme.ExecutionAction(
             scriptText: action.scriptText,
             title: action.title,
+            shellToInvoke: action.shellPath,
             environmentBuildable: buildableReference
         )
     }
@@ -912,7 +914,7 @@ final class SchemeDescriptorsGenerator: SchemeDescriptorsGenerating {
         }
 
         switch graphTarget.target.product {
-        case .appExtension, .messagesExtension:
+        case .appExtension, .messagesExtension, .extensionKitExtension:
             return true
         default:
             return nil

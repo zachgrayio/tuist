@@ -37,9 +37,9 @@ struct NodeStyleAttributes {
 extension GraphTarget {
     var styleAttributes: NodeStyleAttributes {
         switch target.product {
-        case .app, .watch2App, .commandLineTool, .appClip, .xpc:
+        case .app, .watch2App, .commandLineTool, .appClip, .xpc, .systemExtension:
             return .init(fillColorName: .deepskyblue, strokeWidth: 1.5, shape: .box3d)
-        case .appExtension, .watch2Extension, .tvTopShelfExtension:
+        case .appExtension, .watch2Extension, .tvTopShelfExtension, .extensionKitExtension:
             return .init(fillColorName: .deepskyblue2, shape: .component)
         case .messagesExtension, .stickerPackExtension:
             return .init(fillColorName: .springgreen2, shape: .component)

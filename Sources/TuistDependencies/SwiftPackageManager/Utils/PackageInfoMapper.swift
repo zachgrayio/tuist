@@ -283,6 +283,8 @@ public final class PackageInfoMapper: PackageInfoMapping {
                 acc[.tvOS] = .tvOS(targetVersion: next.value)
             case .watchOS:
                 acc[.watchOS] = .watchOS(targetVersion: next.value)
+            case .visionOS:
+                acc[.visionOS] = .visionOS(targetVersion: next.value)
             }
         }
 
@@ -574,6 +576,8 @@ extension ProjectDescription.DeploymentTarget {
                 return .watchOS(targetVersion: targetVersion)
             case .tvOS:
                 return .tvOS(targetVersion: targetVersion)
+            case .visionOS:
+                return .visionOS(targetVersion: targetVersion)
             }
         } else {
             return minDeploymentTargets[platform]!
@@ -822,7 +826,7 @@ extension ProjectDescription.Settings {
     ) throws -> Self? {
         var headerSearchPaths: [String] = []
         var defines = ["SWIFT_PACKAGE": "1"]
-        var swiftDefines = ["SWIFT_PACKAGE"]
+        var swiftDefines = "SWIFT_PACKAGE"
         var cFlags: [String] = []
         var cxxFlags: [String] = []
         var swiftFlags: [String] = []
@@ -879,7 +883,7 @@ extension ProjectDescription.Settings {
                 case (.cxx, .unsafeFlags):
                     cxxFlags.append(contentsOf: setting.value)
                 case (.swift, .define):
-                    swiftDefines.append(setting.value[0])
+                    swiftDefines.append(" \(setting.value[0])")
                 case (.swift, .unsafeFlags):
                     swiftFlags.append(contentsOf: setting.value)
                 case (.linker, .unsafeFlags):
@@ -927,7 +931,7 @@ extension ProjectDescription.Settings {
         }
 
         if !swiftDefines.isEmpty {
-            settingsDictionary["SWIFT_ACTIVE_COMPILATION_CONDITIONS"] = .array(["$(inherited)"] + swiftDefines)
+            settingsDictionary["SWIFT_ACTIVE_COMPILATION_CONDITIONS"] = "$(inherited) \(swiftDefines)"
         }
 
         if !cFlags.isEmpty {
@@ -1019,6 +1023,8 @@ extension TuistGraph.Platform {
             return .tvOS
         case .watchOS:
             return .watchOS
+        case .visionOS:
+            return .visionOS
         }
     }
 }
@@ -1034,6 +1040,8 @@ extension PackageInfo.Platform {
             return .tvOS
         case "watchos":
             return .watchOS
+        case "visionos":
+            return .visionOS
         default:
             throw PackageInfoMapperError.unknownPlatform(platformName)
         }
@@ -1077,6 +1085,10 @@ extension ProjectDescription.Product {
             return .appClip
         case .xpc:
             return .xpc
+        case .systemExtension:
+            return .systemExtension
+        case .extensionKitExtension:
+            return .extensionKitExtension
         }
     }
 }
@@ -1158,6 +1170,8 @@ extension ProjectDescription.DeploymentTarget {
             return .tvOS(targetVersion: version)
         case let .watchOS(version):
             return .watchOS(targetVersion: version)
+        case let .visionOS(version):
+            return .visionOS(targetVersion: version)
         }
     }
 }

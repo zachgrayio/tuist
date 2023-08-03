@@ -270,13 +270,10 @@ final class ConfigGenerator: ConfigGenerating {
         var settings: SettingsDictionary = [:]
         settings["TEST_TARGET_NAME"] = .string("\(app.target.name)")
         if target.product == .unitTests {
-            var testHostPath = "$(BUILT_PRODUCTS_DIR)/\(app.target.productNameWithExtension)"
-
-            if target.platform == .macOS {
-                testHostPath += "/Contents/MacOS"
-            }
-
-            settings["TEST_HOST"] = .string("\(testHostPath)/\(app.target.productName)")
+            settings["TEST_HOST"] =
+                .string(
+                    "$(BUILT_PRODUCTS_DIR)/\(app.target.productNameWithExtension)/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/\(app.target.productName)"
+                )
             settings["BUNDLE_LOADER"] = "$(TEST_HOST)"
         }
 
@@ -313,6 +310,12 @@ final class ConfigGenerator: ConfigGenerating {
             settings["WATCHOS_DEPLOYMENT_TARGET"] = .string(version)
         case let .tvOS(version):
             settings["TVOS_DEPLOYMENT_TARGET"] = .string(version)
+        case let .visionOS(version):
+            let deviceFamilyValues = [1, 2, 7]
+
+            settings["TARGETED_DEVICE_FAMILY"] = .string(deviceFamilyValues.map { "\($0)" }.joined(separator: ","))
+
+            settings["XROS_DEPLOYMENT_TARGET"] = .string(version)
         }
 
         return settings

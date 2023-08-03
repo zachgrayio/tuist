@@ -106,6 +106,15 @@ final class BuildPhaseGenerator: BuildPhaseGenerating {
             pbxproj: pbxproj
         )
 
+        try generateExtensionKitExtensionsBuildPhase(
+            path: path,
+            target: target,
+            graphTraverser: graphTraverser,
+            pbxTarget: pbxTarget,
+            fileElements: fileElements,
+            pbxproj: pbxproj
+        )
+
         if target.canEmbedWatchApplications() {
             try generateEmbedWatchBuildPhase(
                 path: path,
@@ -119,6 +128,17 @@ final class BuildPhaseGenerator: BuildPhaseGenerating {
 
         if target.canEmbedXPCServices() {
             try generateEmbedXPCServicesBuildPhase(
+                path: path,
+                target: target,
+                graphTraverser: graphTraverser,
+                pbxTarget: pbxTarget,
+                fileElements: fileElements,
+                pbxproj: pbxproj
+            )
+        }
+
+        if target.canEmbedSystemExtensions() {
+            try generateEmbedSystemExtensionBuildPhase(
                 path: path,
                 target: target,
                 graphTraverser: graphTraverser,
@@ -493,7 +513,7 @@ final class BuildPhaseGenerator: BuildPhaseGenerating {
         guard !appExtensions.isEmpty else { return }
         var pbxBuildFiles = [PBXBuildFile]()
 
-        let appExtensionsBuildPhase = PBXCopyFilesBuildPhase(dstSubfolderSpec: .plugins, name: "Embed App Extensions")
+        let appExtensionsBuildPhase = PBXCopyFilesBuildPhase(dstSubfolderSpec: .plugins, name: "Embed Foundation Extensions")
         pbxproj.add(object: appExtensionsBuildPhase)
         pbxTarget.buildPhases.append(appExtensionsBuildPhase)
 
@@ -600,5 +620,65 @@ final class BuildPhaseGenerator: BuildPhaseGenerating {
         }
         pbxBuildFiles.forEach { pbxproj.add(object: $0) }
         embedXPCServicesBuildPhase.files = pbxBuildFiles
+    }
+
+    func generateEmbedSystemExtensionBuildPhase(
+        path: AbsolutePath,
+        target: Target,
+        graphTraverser: GraphTraversing,
+        pbxTarget: PBXTarget,
+        fileElements: ProjectFileElements,
+        pbxproj: PBXProj
+    ) throws {
+        let targetDependencies = graphTraverser.directLocalTargetDependencies(path: path, name: target.name).sorted()
+        let systemExtensions = targetDependencies.filter { $0.target.isEmbeddableSystemExtension() }
+        guard !systemExtensions.isEmpty else { return }
+        var pbxBuildFiles = [PBXBuildFile]()
+
+        let embedSystemExtensionsBuildPhase = PBXCopyFilesBuildPhase(
+            dstPath: "$(CONTENTS_FOLDER_PATH)/Library/SystemExtensions",
+            dstSubfolderSpec: .productsDirectory,
+            name: "Embed System Extensions"
+        )
+        pbxproj.add(object: embedSystemExtensionsBuildPhase)
+        pbxTarget.buildPhases.append(embedSystemExtensionsBuildPhase)
+
+        let refs = systemExtensions.compactMap { fileElements.product(target: $0.target.name) }
+
+        refs.forEach {
+            let pbxBuildFile = PBXBuildFile(file: $0, settings: ["ATTRIBUTES": ["RemoveHeadersOnCopy"]])
+            pbxBuildFiles.append(pbxBuildFile)
+        }
+        pbxBuildFiles.forEach { pbxproj.add(object: $0) }
+        embedSystemExtensionsBuildPhase.files = pbxBuildFiles
+    }
+
+    func generateExtensionKitExtensionsBuildPhase(
+        path: AbsolutePath,
+        target: Target,
+        graphTraverser: GraphTraversing,
+        pbxTarget: PBXTarget,
+        fileElements: ProjectFileElements,
+        pbxproj: PBXProj
+    ) throws {
+        let extensions = graphTraverser.extensionKitExtensionDependencies(path: path, name: target.name).sorted()
+        guard !extensions.isEmpty else { return }
+        var pbxBuildFiles = [PBXBuildFile]()
+
+        let extensionKitExtensionsBuildPhase = PBXCopyFilesBuildPhase(
+            dstPath: "$(EXTENSIONS_FOLDER_PATH)",
+            dstSubfolderSpec: .productsDirectory,
+            name: "Embed ExtensionKit Extensions"
+        )
+        pbxproj.add(object: extensionKitExtensionsBuildPhase)
+        pbxTarget.buildPhases.append(extensionKitExtensionsBuildPhase)
+
+        let refs = extensions.compactMap { fileElements.product(target: $0.target.name) }
+        refs.forEach {
+            let pbxBuildFile = PBXBuildFile(file: $0, settings: ["ATTRIBUTES": ["RemoveHeadersOnCopy"]])
+            pbxBuildFiles.append(pbxBuildFile)
+        }
+        pbxBuildFiles.forEach { pbxproj.add(object: $0) }
+        extensionKitExtensionsBuildPhase.files = pbxBuildFiles
     }
 }

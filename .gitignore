@@ -110,3 +110,6 @@ vendor/
 /managed_proto
 
 Sources/BazelProto/src/main/protobuf/remote_execution_log.pb.swift
+
+# Apollo
+apollo-ios-cli

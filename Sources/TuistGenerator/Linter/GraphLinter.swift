@@ -317,6 +317,7 @@ public class GraphLinter: GraphLinting {
             LintableTarget(platform: .watchOS, product: .app),
             LintableTarget(platform: .iOS, product: .appClip),
 //            LintableTarget(platform: .watchOS, product: .watchApp),
+            LintableTarget(platform: .iOS, product: .extensionKitExtension),
         ],
         LintableTarget(platform: .iOS, product: .staticLibrary): [
             LintableTarget(platform: .iOS, product: .staticLibrary),
@@ -370,6 +371,12 @@ public class GraphLinter: GraphLinting {
             LintableTarget(platform: .iOS, product: .framework),
             LintableTarget(platform: .iOS, product: .staticFramework),
         ],
+        LintableTarget(platform: .iOS, product: .extensionKitExtension): [
+            LintableTarget(platform: .iOS, product: .staticLibrary),
+            LintableTarget(platform: .iOS, product: .dynamicLibrary),
+            LintableTarget(platform: .iOS, product: .framework),
+            LintableTarget(platform: .iOS, product: .staticFramework),
+        ],
         //        LintableTarget(platform: .iOS, product: .messagesApplication): [
 //            LintableTarget(platform: .iOS, product: .messagesExtension),
 //            LintableTarget(platform: .iOS, product: .staticLibrary),
@@ -397,6 +404,7 @@ public class GraphLinter: GraphLinting {
             LintableTarget(platform: .macOS, product: .app),
             LintableTarget(platform: .macOS, product: .commandLineTool),
             LintableTarget(platform: .macOS, product: .xpc),
+            LintableTarget(platform: .macOS, product: .systemExtension),
         ],
         LintableTarget(platform: .macOS, product: .staticLibrary): [
             LintableTarget(platform: .macOS, product: .staticLibrary),
@@ -562,6 +570,7 @@ public class GraphLinter: GraphLinting {
             LintableTarget(platform: .watchOS, product: .dynamicLibrary),
             LintableTarget(platform: .watchOS, product: .framework),
             LintableTarget(platform: .watchOS, product: .staticFramework),
+            LintableTarget(platform: .watchOS, product: .appExtension),
         ],
 
         LintableTarget(platform: .watchOS, product: .appExtension): [
@@ -569,6 +578,65 @@ public class GraphLinter: GraphLinting {
             LintableTarget(platform: .watchOS, product: .dynamicLibrary),
             LintableTarget(platform: .watchOS, product: .staticFramework),
             LintableTarget(platform: .watchOS, product: .framework),
+        ],
+        LintableTarget(platform: .macOS, product: .systemExtension): [
+            LintableTarget(platform: .macOS, product: .staticLibrary),
+            LintableTarget(platform: .macOS, product: .dynamicLibrary),
+            LintableTarget(platform: .macOS, product: .framework),
+            LintableTarget(platform: .macOS, product: .staticFramework),
+        ],
+
+        // visionOS products
+        LintableTarget(platform: .visionOS, product: .app): [
+            LintableTarget(platform: .visionOS, product: .staticLibrary),
+            LintableTarget(platform: .visionOS, product: .dynamicLibrary),
+            LintableTarget(platform: .visionOS, product: .framework),
+            LintableTarget(platform: .visionOS, product: .staticFramework),
+            LintableTarget(platform: .visionOS, product: .bundle),
+            LintableTarget(platform: .visionOS, product: .appExtension),
+            LintableTarget(platform: .visionOS, product: .extensionKitExtension),
+        ],
+        LintableTarget(platform: .visionOS, product: .staticLibrary): [
+            LintableTarget(platform: .visionOS, product: .staticLibrary),
+            LintableTarget(platform: .visionOS, product: .staticFramework),
+            LintableTarget(platform: .visionOS, product: .framework),
+            LintableTarget(platform: .visionOS, product: .bundle),
+        ],
+        LintableTarget(platform: .visionOS, product: .staticFramework): [
+            LintableTarget(platform: .visionOS, product: .staticLibrary),
+            LintableTarget(platform: .visionOS, product: .staticFramework),
+            LintableTarget(platform: .visionOS, product: .framework),
+            LintableTarget(platform: .visionOS, product: .bundle),
+        ],
+        LintableTarget(platform: .visionOS, product: .dynamicLibrary): [
+            LintableTarget(platform: .visionOS, product: .dynamicLibrary),
+            LintableTarget(platform: .visionOS, product: .bundle),
+        ],
+        LintableTarget(platform: .visionOS, product: .framework): [
+            LintableTarget(platform: .visionOS, product: .framework),
+            LintableTarget(platform: .visionOS, product: .staticLibrary),
+            LintableTarget(platform: .visionOS, product: .staticFramework),
+            LintableTarget(platform: .visionOS, product: .bundle),
+        ],
+        LintableTarget(platform: .visionOS, product: .unitTests): [
+            LintableTarget(platform: .visionOS, product: .app),
+            LintableTarget(platform: .visionOS, product: .staticLibrary),
+            LintableTarget(platform: .visionOS, product: .dynamicLibrary),
+            LintableTarget(platform: .visionOS, product: .framework),
+            LintableTarget(platform: .visionOS, product: .staticFramework),
+            LintableTarget(platform: .visionOS, product: .bundle),
+        ],
+        LintableTarget(platform: .visionOS, product: .appExtension): [
+            LintableTarget(platform: .visionOS, product: .staticLibrary),
+            LintableTarget(platform: .visionOS, product: .dynamicLibrary),
+            LintableTarget(platform: .visionOS, product: .staticFramework),
+            LintableTarget(platform: .visionOS, product: .framework),
+        ],
+        LintableTarget(platform: .visionOS, product: .extensionKitExtension): [
+            LintableTarget(platform: .visionOS, product: .staticLibrary),
+            LintableTarget(platform: .visionOS, product: .dynamicLibrary),
+            LintableTarget(platform: .visionOS, product: .framework),
+            LintableTarget(platform: .visionOS, product: .staticFramework),
         ],
     ]
 }
